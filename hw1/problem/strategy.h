@@ -41,33 +41,53 @@ enum Way {
   // Seam point #1 - add another way.
 };
 
-void hard() { cout << "The hard way.\n"; }
-void easy() { cout << "The easy way.\n"; }
-void trivial() { cout << "The trivial way.\n"; }
+void hard() {
+  cout << "The hard way.\n";
+}
+void easy() {
+  cout << "The easy way.\n";
+}
+void trivial() {
+  cout << "The trivial way.\n";
+}
 // Seam point #2 - add another way.
 
 struct Strategy {
-  virtual ~Strategy() { DTOR("~Strategy", Homework); }
+  virtual ~Strategy() {
+    DTOR("~Strategy", Homework);
+  }
 
   virtual void compute() = 0;
 };
 
 struct CriteriaHard : public Strategy {
-  ~CriteriaHard() { DTOR("~CriteriaHard", Homework); }
+  ~CriteriaHard() {
+    DTOR("~CriteriaHard", Homework);
+  }
 
-  void compute() { hard(); }
+  void compute() {
+    hard();
+  }
 };
 
 struct CriteriaEasy : public Strategy {
-  ~CriteriaEasy() { DTOR("~CriteriaEasy", Homework); }
+  ~CriteriaEasy() {
+    DTOR("~CriteriaEasy", Homework);
+  }
 
-  void compute() { easy(); }
+  void compute() {
+    easy();
+  }
 };
 
 struct CriteriaTrivial : public Strategy {
-  ~CriteriaTrivial() { DTOR("~CriteriaTrivial", Homework); }
+  ~CriteriaTrivial() {
+    DTOR("~CriteriaTrivial", Homework);
+  }
 
-  void compute() { trivial(); }
+  void compute() {
+    trivial();
+  }
 };
 
 void clientCode1(Strategy* criteria) {
@@ -131,10 +151,18 @@ enum Way {
   // Seam point #1 - add another way.
 };
 
-void hard() { cout << "The hard way.\n"; }
-void easy() { cout << "The easy way.\n"; }
-void quick() { cout << "The quick way.\n"; }
-void clear() { cout << "The clear way.\n"; }
+void hard() {
+  cout << "The hard way.\n";
+}
+void easy() {
+  cout << "The easy way.\n";
+}
+void quick() {
+  cout << "The quick way.\n";
+}
+void clear() {
+  cout << "The clear way.\n";
+}
 // Seam point #2 - add another way.
 
 void clientCode1(Way way) {
