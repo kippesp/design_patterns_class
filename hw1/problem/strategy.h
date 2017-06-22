@@ -137,6 +137,10 @@ void demo(int seqNo) {  // Test all daughter classes & clients.
     cout << endl;
   }
   cout << endl;
+
+  for (size_t i = 0; i < COUNT(criteria); i++) {
+    delete scheme[i];
+  }
 }
 
 }  // legacy
