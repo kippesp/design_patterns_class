@@ -8,7 +8,7 @@
 #ifndef SRC_PROBLEMS_STRAT_H_
 #define SRC_PROBLEMS_STRAT_H_
 
-#include "../macros.h"
+#include "macros.h"
 
 /* Consider a case where there is a growing number of ways to perform a task
  * and a growing number of use cases that have to choose one of those ways.

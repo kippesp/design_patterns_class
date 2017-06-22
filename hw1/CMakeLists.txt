@@ -16,6 +16,7 @@ if (CMAKE_BUILD_TYPE)
 endif()
 
 include_directories(
+  ${CMAKE_SOURCE_DIR}
   problem
   solution
   )

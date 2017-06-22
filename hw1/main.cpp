@@ -10,17 +10,13 @@
 #include <iostream>
 using namespace std;
 
-#include "macros.h"  // Redundant, already in the <dp>.h files, but may need if you change the directory structure implied below.
-
 namespace strategy {
 namespace homework {
 #include "problem/strategy.h"
-}
-}
-
 #include "solution/strategy.h"
-
 // Seam point - include next design pattern.
+}
+}
 
 int main(int argc, char* args[]) {
   if (argc != 2) {
