@@ -8,7 +8,6 @@
 #ifndef SRC_PROBLEMS_STRAT_H_
 #define SRC_PROBLEMS_STRAT_H_
 
-
 #include "../macros.h"
 
 /* Consider a case where there is a growing number of ways to perform a task
@@ -36,9 +35,9 @@
 namespace legacy {
 
 enum Way {
-	Hard,
-	Easy
-	// Seam point #1 - add another way.
+  Hard,
+  Easy
+  // Seam point #1 - add another way.
 };
 
 void hard() { cout << "The hard way.\n"; }
@@ -46,63 +45,79 @@ void easy() { cout << "The easy way.\n"; }
 // Seam point #2 - add another way.
 
 void clientCode1(Way way) {
-	cout << "  clientCode1 - ";
-	switch (way) {
-	case Hard: hard(); break;
-	case Easy: easy(); break;
-	// Seam point #3 - add another way.
-	}
+  cout << "  clientCode1 - ";
+  switch (way) {
+    case Hard:
+      hard();
+      break;
+    case Easy:
+      easy();
+      break;
+      // Seam point #3 - add another way.
+  }
 }
 void clientCode2(Way way) {
-	cout << "  clientCode2 - ";
-	switch (way) {
-	case Hard: hard(); break;
-	case Easy: easy(); break;
-	// Seam point #4 - add another way.
-	}
+  cout << "  clientCode2 - ";
+  switch (way) {
+    case Hard:
+      hard();
+      break;
+    case Easy:
+      easy();
+      break;
+      // Seam point #4 - add another way.
+  }
 }
 void clientCode3(Way way) {
-	cout << "  clientCode3 - ";
-	switch (way) {
-	case Hard: hard(); break;
-	case Easy: easy(); break;
-	// Seam point #5 - add another way.
-	}
+  cout << "  clientCode3 - ";
+  switch (way) {
+    case Hard:
+      hard();
+      break;
+    case Easy:
+      easy();
+      break;
+      // Seam point #5 - add another way.
+  }
 }
 //...
 void clientCode8(Way way) {
-	cout << "  clientCode8 - ";
-	switch (way) {
-	case Hard: hard(); break;
-	case Easy: easy(); break;
-	// Seam point #10 - add another way.
-	}
+  cout << "  clientCode8 - ";
+  switch (way) {
+    case Hard:
+      hard();
+      break;
+    case Easy:
+      easy();
+      break;
+      // Seam point #10 - add another way.
+  }
 }
 
-void demo(int seqNo) { // Test all daughter classes & clients.
-	cout << seqNo << ") << strategy::homework::problem::demo() >>\n";
-	Way criteria[] = { Hard, Easy };
-	for(size_t i=0; i<COUNT(criteria); i++) {
-		clientCode1(criteria[i]);
-		clientCode2(criteria[i]);
-		clientCode3(criteria[i]);
-		//...
-		clientCode8(criteria[i]);
-		cout << endl;
-	}
-	cout << endl;
+void demo(int seqNo) {  // Test all daughter classes & clients.
+  cout << seqNo << ") << strategy::homework::problem::demo() >>\n";
+  Way criteria[] = {Hard, Easy};
+  for (size_t i = 0; i < COUNT(criteria); i++) {
+    clientCode1(criteria[i]);
+    clientCode2(criteria[i]);
+    clientCode3(criteria[i]);
+    //...
+    clientCode8(criteria[i]);
+    cout << endl;
+  }
+  cout << endl;
 }
 
-} // legacy
+}  // legacy
 
 namespace problem {
 
 enum Way {
-	Hard,
-	Easy,
-	Quick,
-	Clear
-	// Seam point #1 - add another way.
+  Hard,
+  Easy,
+  Quick,
+  Clear
+  // Seam point #1 - add another way.
 };
 
 void hard() { cout << "The hard way.\n"; }
@@ -112,62 +127,93 @@ void clear() { cout << "The clear way.\n"; }
 // Seam point #2 - add another way.
 
 void clientCode1(Way way) {
-	cout << "  clientCode1 - ";
-	switch (way) {
-	case Hard:  hard();  break;
-	case Easy:  easy();  break;
-	case Quick: quick(); break;
-	case Clear: clear(); break;
-	// Seam point #3 - add another way.
-	}
+  cout << "  clientCode1 - ";
+  switch (way) {
+    case Hard:
+      hard();
+      break;
+    case Easy:
+      easy();
+      break;
+    case Quick:
+      quick();
+      break;
+    case Clear:
+      clear();
+      break;
+      // Seam point #3 - add another way.
+  }
 }
 void clientCode2(Way way) {
-	cout << "  clientCode2 - ";
-	switch (way) {
-	case Hard:  hard();  break;
-	case Easy:  easy();  break;
-	case Quick: quick(); break;
-	case Clear: clear(); break;
-	// Seam point #4 - add another way.
-	}
+  cout << "  clientCode2 - ";
+  switch (way) {
+    case Hard:
+      hard();
+      break;
+    case Easy:
+      easy();
+      break;
+    case Quick:
+      quick();
+      break;
+    case Clear:
+      clear();
+      break;
+      // Seam point #4 - add another way.
+  }
 }
 void clientCode3(Way way) {
-	cout << "  clientCode3 - ";
-	switch (way) {
-	case Hard:  hard();  break;
-	case Easy:  easy();  break;
-	case Quick: quick(); break;
-	case Clear: clear(); break;
-	// Seam point #5 - add another way.
-	}
+  cout << "  clientCode3 - ";
+  switch (way) {
+    case Hard:
+      hard();
+      break;
+    case Easy:
+      easy();
+      break;
+    case Quick:
+      quick();
+      break;
+    case Clear:
+      clear();
+      break;
+      // Seam point #5 - add another way.
+  }
 }
 //...
 void clientCode18(Way way) {
-	cout << "  clientCode18 - ";
-	switch (way) {
-	case Hard:  hard();  break;
-	case Easy:  easy();  break;
-	case Quick: quick(); break;
-	case Clear: clear(); break;
-	// Seam point #20 - add another way.
-	}
+  cout << "  clientCode18 - ";
+  switch (way) {
+    case Hard:
+      hard();
+      break;
+    case Easy:
+      easy();
+      break;
+    case Quick:
+      quick();
+      break;
+    case Clear:
+      clear();
+      break;
+      // Seam point #20 - add another way.
+  }
 }
 
-void demo(int seqNo) { // Test all daughter classes & clients.
-	cout << seqNo << ") << strategy::homework::problem::demo() >>\n";
-	Way criteria[] = { Hard, Easy, Quick, Clear };
-	for(size_t i=0; i<COUNT(criteria); i++) {
-		clientCode1(criteria[i]);
-		clientCode2(criteria[i]);
-		clientCode3(criteria[i]);
-		//...
-		clientCode18(criteria[i]);
-		cout << endl;
-	}
-	cout << endl;
+void demo(int seqNo) {  // Test all daughter classes & clients.
+  cout << seqNo << ") << strategy::homework::problem::demo() >>\n";
+  Way criteria[] = {Hard, Easy, Quick, Clear};
+  for (size_t i = 0; i < COUNT(criteria); i++) {
+    clientCode1(criteria[i]);
+    clientCode2(criteria[i]);
+    clientCode3(criteria[i]);
+    //...
+    clientCode18(criteria[i]);
+    cout << endl;
+  }
+  cout << endl;
 }
 
-} // problem
-
+}  // problem
 
 #endif /* SRC_PROBLEMS_STRAT_H_ */
