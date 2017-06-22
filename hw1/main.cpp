@@ -30,7 +30,7 @@ int main(int argc, char* args[]) {
     case 1:
       strategy::homework::legacy::demo(dp);
       strategy::homework::problem::demo(dp);
-      // strategy::homework::solution::demo(dp);
+      strategy::homework::solution::demo(dp);
       break;
     // Seam point - add next design pattern.
 
