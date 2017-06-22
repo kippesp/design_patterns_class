@@ -12,8 +12,14 @@ using namespace std;
  
 #include "macros.h"     // Redundant, already in the <dp>.h files, but may need if you change the directory structure implied below.
  
-#include "Problems/strategy.h"
-#include "Solutions/strategy.h"
+namespace strategy {
+namespace homework {
+#include "problem/strategy.h"
+}
+}
+
+#include "solution/strategy.h"
+
 // Seam point - include next design pattern.
  
 int main(int argc, char* args[]) {
@@ -28,7 +34,7 @@ int main(int argc, char* args[]) {
     case 1:
         strategy::homework::legacy::demo(dp);
         strategy::homework::problem::demo(dp);
-        strategy::homework::solution::demo(dp);
+        //strategy::homework::solution::demo(dp);
         break;
     // Seam point - add next design pattern.
  
