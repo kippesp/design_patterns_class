@@ -151,7 +151,8 @@ enum Way {
   Hard,
   Easy,
   Quick,
-  Clear
+  Clear,
+  Given,
   // Seam point #1 - add another way.
 };
 
@@ -167,94 +168,129 @@ void quick() {
 void clear() {
   cout << "The clear way.\n";
 }
+void given() {
+  cout << "The given way.\n";
+}
 // Seam point #2 - add another way.
 
-void clientCode1(Way way) {
+struct Strategy {
+  virtual ~Strategy() {
+    DTOR("~Strategy", Homework);
+  }
+
+  virtual void compute() = 0;
+};
+
+struct CriteriaHard : Strategy {
+  ~CriteriaHard() {
+    DTOR("~CriteriaHard", Problem);
+  }
+
+  void compute() {
+    hard();
+  }
+};
+
+struct CriteriaEasy : Strategy {
+  ~CriteriaEasy() {
+    DTOR("~CriteriaEasy", Problem);
+  }
+
+  void compute() {
+    easy();
+  }
+};
+
+struct CriteriaQuick : Strategy {
+  ~CriteriaQuick() {
+    DTOR("~CriteriaQuick", Problem);
+  }
+
+  void compute() {
+    quick();
+  }
+};
+
+struct CriteriaClear : Strategy {
+  ~CriteriaClear() {
+    DTOR("~CriteriaClear", Problem);
+  }
+
+  void compute() {
+    clear();
+  }
+};
+
+struct CriteriaGiven : Strategy {
+  ~CriteriaGiven() {
+    DTOR("~CriteriaGiven", Problem);
+  }
+
+  void compute() {
+    given();
+  }
+};
+
+void clientCode1(Strategy* criteria) {
   cout << "  clientCode1 - ";
-  switch (way) {
-    case Hard:
-      hard();
-      break;
-    case Easy:
-      easy();
-      break;
-    case Quick:
-      quick();
-      break;
-    case Clear:
-      clear();
-      break;
-      // Seam point #3 - add another way.
-  }
+  criteria->compute();
 }
-void clientCode2(Way way) {
+
+void clientCode2(Strategy* criteria) {
   cout << "  clientCode2 - ";
-  switch (way) {
-    case Hard:
-      hard();
-      break;
-    case Easy:
-      easy();
-      break;
-    case Quick:
-      quick();
-      break;
-    case Clear:
-      clear();
-      break;
-      // Seam point #4 - add another way.
-  }
+  criteria->compute();
 }
-void clientCode3(Way way) {
+
+void clientCode3(Strategy* criteria) {
   cout << "  clientCode3 - ";
-  switch (way) {
-    case Hard:
-      hard();
-      break;
-    case Easy:
-      easy();
-      break;
-    case Quick:
-      quick();
-      break;
-    case Clear:
-      clear();
-      break;
-      // Seam point #5 - add another way.
-  }
+  criteria->compute();
 }
+
 //...
-void clientCode18(Way way) {
+
+void clientCode18(Strategy* criteria) {
   cout << "  clientCode18 - ";
-  switch (way) {
-    case Hard:
-      hard();
-      break;
-    case Easy:
-      easy();
-      break;
-    case Quick:
-      quick();
-      break;
-    case Clear:
-      clear();
-      break;
-      // Seam point #20 - add another way.
-  }
+  criteria->compute();
 }
 
 void demo(int seqNo) {  // Test all daughter classes & clients.
   cout << seqNo << ") << strategy::homework::problem::demo() >>\n";
-  Way criteria[] = {Hard, Easy, Quick, Clear};
+  Way criteria[] = {Hard, Easy, Quick, Clear, Given};
+  Strategy* scheme[COUNT(criteria)] = {0};
+
   for (size_t i = 0; i < COUNT(criteria); i++) {
-    clientCode1(criteria[i]);
-    clientCode2(criteria[i]);
-    clientCode3(criteria[i]);
+    switch (criteria[i]) {
+      case Hard:
+        scheme[i] = new CriteriaHard;
+        break;
+      case Easy:
+        scheme[i] = new CriteriaEasy;
+        break;
+      case Quick:
+        scheme[i] = new CriteriaQuick;
+        break;
+      case Clear:
+        scheme[i] = new CriteriaClear;
+        break;
+      case Given:
+        scheme[i] = new CriteriaGiven;
+        break;
+    }
+  }
+
+  for (size_t i = 0; i < COUNT(criteria); i++) {
+    clientCode1(scheme[i]);
+    clientCode2(scheme[i]);
+    clientCode3(scheme[i]);
     //...
-    clientCode18(criteria[i]);
+    clientCode18(scheme[i]);
     cout << endl;
   }
   cout << endl;
+
+  for (size_t i = 0; i < COUNT(criteria); i++) {
+    delete scheme[i];
+  }
 }
 
 }  // problem
