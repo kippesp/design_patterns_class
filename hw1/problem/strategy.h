@@ -36,73 +36,84 @@ namespace legacy {
 
 enum Way {
   Hard,
-  Easy
+  Easy,
+  Trivial
   // Seam point #1 - add another way.
 };
 
 void hard() { cout << "The hard way.\n"; }
 void easy() { cout << "The easy way.\n"; }
+void trivial() { cout << "The trivial way.\n"; }
 // Seam point #2 - add another way.
 
-void clientCode1(Way way) {
+struct Strategy {
+  virtual ~Strategy() { DTOR("~Strategy", Homework); }
+
+  virtual void compute() = 0;
+};
+
+struct CriteriaHard : public Strategy {
+  ~CriteriaHard() { DTOR("~CriteriaHard", Homework); }
+
+  void compute() { hard(); }
+};
+
+struct CriteriaEasy : public Strategy {
+  ~CriteriaEasy() { DTOR("~CriteriaEasy", Homework); }
+
+  void compute() { easy(); }
+};
+
+struct CriteriaTrivial : public Strategy {
+  ~CriteriaTrivial() { DTOR("~CriteriaTrivial", Homework); }
+
+  void compute() { trivial(); }
+};
+
+void clientCode1(Strategy* criteria) {
   cout << "  clientCode1 - ";
-  switch (way) {
-    case Hard:
-      hard();
-      break;
-    case Easy:
-      easy();
-      break;
-      // Seam point #3 - add another way.
-  }
+  criteria->compute();
 }
-void clientCode2(Way way) {
+
+void clientCode2(Strategy* criteria) {
   cout << "  clientCode2 - ";
-  switch (way) {
-    case Hard:
-      hard();
-      break;
-    case Easy:
-      easy();
-      break;
-      // Seam point #4 - add another way.
-  }
+  criteria->compute();
 }
-void clientCode3(Way way) {
+
+void clientCode3(Strategy* criteria) {
   cout << "  clientCode3 - ";
-  switch (way) {
-    case Hard:
-      hard();
-      break;
-    case Easy:
-      easy();
-      break;
-      // Seam point #5 - add another way.
-  }
+  criteria->compute();
 }
+
 //...
-void clientCode8(Way way) {
+void clientCode8(Strategy* criteria) {
   cout << "  clientCode8 - ";
-  switch (way) {
-    case Hard:
-      hard();
-      break;
-    case Easy:
-      easy();
-      break;
-      // Seam point #10 - add another way.
-  }
+  criteria->compute();
 }
 
 void demo(int seqNo) {  // Test all daughter classes & clients.
   cout << seqNo << ") << strategy::homework::problem::demo() >>\n";
-  Way criteria[] = {Hard, Easy};
+  Way criteria[] = {Hard, Easy, Trivial};
+  Strategy* scheme[COUNT(criteria)] = {0};
+
   for (size_t i = 0; i < COUNT(criteria); i++) {
-    clientCode1(criteria[i]);
-    clientCode2(criteria[i]);
-    clientCode3(criteria[i]);
+    switch (criteria[i]) {
+      case Hard:
+        scheme[i] = new CriteriaHard;
+        break;
+      case Easy:
+        scheme[i] = new CriteriaEasy;
+        break;
+      case Trivial:
+        scheme[i] = new CriteriaTrivial;
+        break;
+    }
+
+    clientCode1(scheme[i]);
+    clientCode2(scheme[i]);
+    clientCode3(scheme[i]);
     //...
-    clientCode8(criteria[i]);
+    clientCode8(scheme[i]);
     cout << endl;
   }
   cout << endl;
