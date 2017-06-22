@@ -8,6 +8,8 @@
 #ifndef SRC_PROBLEMS_STRAT_H_
 #define SRC_PROBLEMS_STRAT_H_
 
+#include <cassert>
+
 #include "macros.h"
 
 /* Consider a case where there is a growing number of ways to perform a task
@@ -41,15 +43,6 @@ enum Way {
   // Seam point #1 - add another way.
 };
 
-void hard() {
-  cout << "The hard way.\n";
-}
-void easy() {
-  cout << "The easy way.\n";
-}
-void trivial() {
-  cout << "The trivial way.\n";
-}
 // Seam point #2 - add another way.
 
 struct Strategy {
@@ -66,7 +59,7 @@ struct CriteriaHard : public Strategy {
   }
 
   void compute() {
-    hard();
+    cout << "The hard way.\n";
   }
 };
 
@@ -76,7 +69,7 @@ struct CriteriaEasy : public Strategy {
   }
 
   void compute() {
-    easy();
+    cout << "The easy way.\n";
   }
 };
 
@@ -86,7 +79,7 @@ struct CriteriaTrivial : public Strategy {
   }
 
   void compute() {
-    trivial();
+    cout << "The trivial way.\n";
   }
 };
 
@@ -127,6 +120,8 @@ void demo(int seqNo) {  // Test all daughter classes & clients.
       case Trivial:
         scheme[i] = new CriteriaTrivial;
         break;
+      default:
+        assert(false);
     }
 
     clientCode1(scheme[i]);
@@ -156,21 +151,6 @@ enum Way {
   // Seam point #1 - add another way.
 };
 
-void hard() {
-  cout << "The hard way.\n";
-}
-void easy() {
-  cout << "The easy way.\n";
-}
-void quick() {
-  cout << "The quick way.\n";
-}
-void clear() {
-  cout << "The clear way.\n";
-}
-void given() {
-  cout << "The given way.\n";
-}
 // Seam point #2 - add another way.
 
 struct Strategy {
@@ -187,7 +167,7 @@ struct CriteriaHard : Strategy {
   }
 
   void compute() {
-    hard();
+    cout << "The hard way.\n";
   }
 };
 
@@ -197,7 +177,7 @@ struct CriteriaEasy : Strategy {
   }
 
   void compute() {
-    easy();
+    cout << "The easy way.\n";
   }
 };
 
@@ -207,7 +187,7 @@ struct CriteriaQuick : Strategy {
   }
 
   void compute() {
-    quick();
+    cout << "The quick way.\n";
   }
 };
 
@@ -217,7 +197,7 @@ struct CriteriaClear : Strategy {
   }
 
   void compute() {
-    clear();
+    cout << "The clear way.\n";
   }
 };
 
@@ -227,7 +207,7 @@ struct CriteriaGiven : Strategy {
   }
 
   void compute() {
-    given();
+    cout << "The given way.\n";
   }
 };
 
@@ -275,6 +255,8 @@ void demo(int seqNo) {  // Test all daughter classes & clients.
       case Given:
         scheme[i] = new CriteriaGiven;
         break;
+      default:
+        assert(false);
     }
   }
 
