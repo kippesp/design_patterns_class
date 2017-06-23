@@ -10,8 +10,8 @@
 #include <iostream>
 using namespace std;
 
-namespace strategy {
 namespace homework {
+namespace strategy {
 #include "problem/strategy.h"
 #include "solution/strategy.h"
 // Seam point - include next design pattern.
@@ -28,9 +28,9 @@ int main(int argc, char* args[]) {
 
   switch (dp) {
     case 1:
-      strategy::homework::legacy::demo(dp);
-      strategy::homework::problem::demo(dp);
-      strategy::homework::solution::demo(dp);
+      homework::strategy::legacy::demo(dp);
+      homework::strategy::problem::demo(dp);
+      homework::strategy::solution::demo(dp);
       break;
     // Seam point - add next design pattern.
 
