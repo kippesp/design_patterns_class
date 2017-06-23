@@ -10,8 +10,6 @@
 #ifndef SRC_SOLUTIONS_STRAT_H_
 #define SRC_SOLUTIONS_STRAT_H_
 
-#include "../macros.h"
-
 namespace solution {
 
 enum Way {
