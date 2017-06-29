@@ -1,7 +1,6 @@
 HW1 - Strategy Pattern
     DPE: ch. 1-5, 8, 9
     GOF: ch. 1, 2, 5 (315)
-
 -----------------------------------------------------------------------------
 HW2 - Adapter Pattern
     DPE: ch 7
@@ -10,3 +9,11 @@ HW2 - Adapter Pattern
 HW2 - Factory Method
     DPE: ch 23
     GOF: ch 3
+-----------------------------------------------------------------------------
+HW3 - Template Pattern
+    DPE: ch 19
+    GOF: ch 5
+
+HW3 - Observer Pattern
+    DPE: ch 18
+    GOF: ch 5
