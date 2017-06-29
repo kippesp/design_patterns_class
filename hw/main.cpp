@@ -29,6 +29,16 @@ namespace factoryMethod {
 #include "solution/factoryMethod.h"
 }
 
+namespace templateMethod {
+#include "problem/templateMethod.h"
+//#include "solution/templateMethod.h"
+}
+
+namespace observer {
+#include "problem/observer.h"
+//#include "solution/observer.h"
+}
+
 // Seam point - include next design pattern.
 }
 
@@ -55,6 +65,16 @@ int main(int argc, char* args[]) {
       homework::factoryMethod::legacy::demo(dp);
       homework::factoryMethod::problem::demo(dp);
       homework::factoryMethod::solution::demo(dp);
+      break;
+    case 4:
+      homework::templateMethod::legacy::demo(dp);
+      homework::templateMethod::problem::demo(dp);
+      // homework::templateMethod::solution::demo(dp);
+      break;
+    case 5:
+      homework::observer::legacy::demo(dp);
+      homework::observer::problem::demo(dp);
+      // homework::observer::solution::demo(dp);
       break;
 
     // Seam point - add next design pattern.
