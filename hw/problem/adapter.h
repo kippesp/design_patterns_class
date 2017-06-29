@@ -46,6 +46,7 @@ class ShapeInterfaceDraw {  // Home grown classes.
  public:
   virtual void draw() = 0;
 };
+
 class Point : public ShapeInterfaceDraw {
  public:
   ~Point() {
@@ -57,6 +58,7 @@ class Point : public ShapeInterfaceDraw {
     cout << "  Draw point.\n";
   }
 };
+
 class Line : public ShapeInterfaceDraw {
  public:
   ~Line() {
@@ -68,6 +70,7 @@ class Line : public ShapeInterfaceDraw {
     cout << "  Draw line.\n";
   }
 };
+
 class Rect : public ShapeInterfaceDraw {
  public:
   ~Rect() {
@@ -117,6 +120,7 @@ class ShapeInterfaceDisplay {  // Commercial classes.
  public:
   virtual void display() = 0;
 };
+
 class Polygon : public ShapeInterfaceDisplay {
  public:
   ~Polygon() {
@@ -128,6 +132,7 @@ class Polygon : public ShapeInterfaceDisplay {
     cout << "  Display polygon.\n";
   }
 };
+
 class Torus : public ShapeInterfaceDisplay {
  public:
   ~Torus() {
@@ -139,6 +144,7 @@ class Torus : public ShapeInterfaceDisplay {
     cout << "  Display torus.\n";
   }
 };
+
 class Bezel : public ShapeInterfaceDisplay {
  public:
   ~Bezel() {
@@ -156,54 +162,71 @@ class Bezel : public ShapeInterfaceDisplay {
 namespace problem {
 
 using namespace home_grown;
-using namespace commercial;
 
-class Shapes {
- public:                           // Assert; only one of these non zero.
-  ShapeInterfaceDraw* draw;        // home_grown.
-  ShapeInterfaceDisplay* display;  // commercial.
-  // Seam point 1 - insert another "public" member.
- public:
-  Shapes(ShapeInterfaceDraw* draw)  // Seam point i -
-      : draw(draw), display(0) {
-  }                                       // insert another init().
-  Shapes(ShapeInterfaceDisplay* display)  // Seam point j -
-      : draw(0), display(display) {
-  }  // insert another init().
-     // Seam point 2 - insert another ctor.
- public:
-  virtual ~Shapes() {
-    delete draw;
-    delete display;
-    // Seam point 3 - insert another delete.
-    DTOR("  ~Shapes\n", Homework);
+// Adapt commercial version of Polygon
+struct Polygon : public ShapeInterfaceDraw {
+  commercial::Polygon polygon;
+
+  ~Polygon() {
+    DTOR("  ~Polygon\n", Problem);
+  }
+
+  void draw() {
+    cout << "  Adaptor ::";
+    polygon.display();
   }
 };
 
-void clientCode(Shapes* shape) {  // Client adapts to interfaces.
-  if (shape->draw)
-    shape->draw->draw();
-  else if (shape->display)
-    shape->display->display();
-  // Seam point 3 - insert another else-if clause.
-  else
-    throw "OOPS";
+// Adapt commercial version of Torus
+struct Torus : public ShapeInterfaceDraw {
+  commercial::Torus torus;
+
+  ~Torus() {
+    DTOR("  ~Torus\n", Problem);
+  }
+
+  void draw() {
+    cout << "  Adaptor ::";
+    torus.display();
+  }
+};
+
+// Adapt commercial version of Bezel
+struct Bezel : public ShapeInterfaceDraw {
+  commercial::Bezel bezel;
+
+  ~Bezel() {
+    DTOR("  ~Bezel\n", Problem);
+  }
+
+  void draw() {
+    cout << "  Adaptor ::";
+    bezel.display();
+  }
+};
+
+void clientCode(ShapeInterfaceDraw* shape) {
+  shape->draw();
 }
 
 void demo(int seqNo) {
   cout << seqNo << ") << adapter::homework::problem::demo() >>\n";
-  vector<Shapes*> shapes;  // Changes to existing code.
-  shapes.push_back(new Shapes(new Point));
-  shapes.push_back(new Shapes(new Line));
-  shapes.push_back(new Shapes(new Rect));
-  shapes.push_back(new Shapes(new Polygon));
-  shapes.push_back(new Shapes(new Torus));
-  shapes.push_back(new Shapes(new Bezel));
+  vector<ShapeInterfaceDraw*> shapes;
+  shapes.push_back(new Point);
+  shapes.push_back(new Line);
+  shapes.push_back(new Rect);
+  shapes.push_back(new Polygon);
+  shapes.push_back(new Torus);
+  shapes.push_back(new Bezel);
 
   for (size_t i = 0; i < shapes.size(); i++) {
     clientCode(shapes[i]);
   }
-  for (size_t i = 0; i < shapes.size(); i++) delete shapes[i];
+
+  for (size_t i = 0; i < shapes.size(); i++) {
+    delete shapes[i];
+  }
+
   cout << endl;
 }
 
