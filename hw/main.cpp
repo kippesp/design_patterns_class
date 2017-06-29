@@ -26,7 +26,7 @@ namespace adapter {
 
 namespace factoryMethod {
 #include "problem/factoryMethod.h"
-//#include "solution/factoryMethod.h"
+#include "solution/factoryMethod.h"
 }
 
 // Seam point - include next design pattern.
@@ -54,7 +54,7 @@ int main(int argc, char* args[]) {
     case 3:
       homework::factoryMethod::legacy::demo(dp);
       homework::factoryMethod::problem::demo(dp);
-      // homework::adapter::solution::demo(dp);
+      homework::factoryMethod::solution::demo(dp);
       break;
 
     // Seam point - add next design pattern.
