@@ -21,7 +21,7 @@ namespace strategy {
 
 namespace adapter {
 #include "problem/adapter.h"
-//#include "solution/adapter.h"
+#include "solution/adapter.h"
 }
 
 namespace factoryMethod {
@@ -49,7 +49,7 @@ int main(int argc, char* args[]) {
     case 2:
       homework::adapter::legacy::demo(dp);
       homework::adapter::problem::demo(dp);
-      // homework::adapter::solution::demo(dp);
+      homework::adapter::solution::demo(dp);
       break;
     case 3:
       homework::factoryMethod::legacy::demo(dp);
