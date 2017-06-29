@@ -114,7 +114,7 @@ namespace commercial {
 class ShapeInterfaceDisplay {  // Commercial classes.
  public:
   virtual ~ShapeInterfaceDisplay() {
-    DTOR("  ~ShapeInterfaceDisplay\n", Homework);
+    DTOR("  ~ShapeInterfaceDisplay", Homework);
   }
 
  public:
@@ -168,7 +168,7 @@ struct Polygon : public ShapeInterfaceDraw {
   commercial::Polygon polygon;
 
   ~Polygon() {
-    DTOR("  ~Polygon\n", Problem);
+    DTOR("  ~Polygon", Problem);
   }
 
   void draw() {
@@ -182,7 +182,7 @@ struct Torus : public ShapeInterfaceDraw {
   commercial::Torus torus;
 
   ~Torus() {
-    DTOR("  ~Torus\n", Problem);
+    DTOR("  ~Torus", Problem);
   }
 
   void draw() {
@@ -196,7 +196,7 @@ struct Bezel : public ShapeInterfaceDraw {
   commercial::Bezel bezel;
 
   ~Bezel() {
-    DTOR("  ~Bezel\n", Problem);
+    DTOR("  ~Bezel", Problem);
   }
 
   void draw() {
