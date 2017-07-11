@@ -176,7 +176,7 @@ Display* Display::makeObject(const string& criteria) {
 
 struct Crypto {
   virtual ~Crypto() {
-    DTOR(" ~Crypto\n", Problem);
+    DTOR(" ~Crypto; ", Problem);
   }
 
   virtual string protocol() {
@@ -218,6 +218,17 @@ struct RSA : public Crypto {
   }
 };
 
+struct RDX : public Crypto {
+  virtual ~RDX() {
+    DTOR(" ~RDX", Problem);
+  }
+
+  virtual string protocol() {
+    return "RDX()";
+  }
+};
+// Seam point - add another factory.
+
 Crypto* Crypto::makeObject(const string& criteria) {
   if (criteria == "PVP")
     return new PVP;
@@ -225,6 +236,8 @@ Crypto* Crypto::makeObject(const string& criteria) {
     return new ID1;
   else if (criteria == "RSA")
     return new RSA;
+  else if (criteria == "RDX")
+    return new RDX;
   // Seam point - insert another criteria.
 
   return new Crypto;
@@ -244,16 +257,20 @@ void demo(int seqNo) {
   framerate = 60;
   res[0] = 1920, res[1] = 1080;
   string displays[] = {"DisplayPort", "HDMI", "MIPI", "Widi", "HEVC"};
-  string cryptos[] = {"PVP", "ID1", "RSA"};
+  string cryptos[] = {"PVP", "ID1", "RSA", "RDX"};
   for (size_t i = 0; i < COUNT(displays); i++) {
     Display* display = Display::makeObject(displays[i]);
+    vector<Crypto*> crypto;
 
     for (size_t j = 0; j < COUNT(cryptos); j++) {
-      Crypto* crypto = Crypto::makeObject(cryptos[j]);
+      if (crypto.size() < j + 1)
+        crypto.push_back(Crypto::makeObject(cryptos[j]));
 
-      clientCode(framerate, res, display, crypto);
+      clientCode(framerate, res, display, crypto[j]);
+    }
 
-      delete crypto;
+    for (size_t j = 0; j < COUNT(cryptos); j++) {
+      delete crypto[j];
     }
 
     delete display;
