@@ -31,7 +31,7 @@ namespace factoryMethod {
 
 namespace templateMethod {
 #include "problem/templateMethod.h"
-//#include "solution/templateMethod.h"
+#include "solution/templateMethod.h"
 }
 
 namespace observer {
@@ -69,7 +69,7 @@ int main(int argc, char* args[]) {
     case 4:
       homework::templateMethod::legacy::demo(dp);
       homework::templateMethod::problem::demo(dp);
-      // homework::templateMethod::solution::demo(dp);
+      homework::templateMethod::solution::demo(dp);
       break;
     case 5:
       homework::observer::legacy::demo(dp);
