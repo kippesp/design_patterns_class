@@ -110,16 +110,123 @@ void npc() {
 
 namespace problem {
 
-using namespace common;
-using namespace new_specs;
+struct Protective {
+  bool morning() {
+    return true;
+  }
+
+  virtual ~Protective() {
+    DTOR("~Coating\n", Problem);
+  }
+
+  void coating() {
+    setup();
+    schedule();
+
+    if (morning())
+      highHeat();
+    else
+      lowHeat();
+
+    optimization();
+    cleanup();
+    putaway();
+    cout << endl;
+  }
+
+ private:
+  // Non varying steps
+
+  void setup() {
+    cout << "  setup\n";
+  }
+
+  void schedule() {
+    cout << "  schedule\n";
+  }
+
+  void highHeat() {
+    cout << "  highHeat\n";
+  }
+
+  void lowHeat() {
+    cout << "  lowHeat\n";
+  }
+
+  void putaway() {
+    cout << "  putaway\n";
+  }
+
+ protected:
+  // Varying steps
+
+  virtual void optimization() = 0;
+
+  void cleanup() {
+    cout << "  usual cleanup\n";
+  }
+};
+
+struct Fast : public Protective {
+  ~Fast() {
+    DTOR("  ~Fast ", Problem);
+  }
+
+  void optimization() {
+    cout << "  Fast optimized\n";
+  }
+};
+
+struct Economic : public Protective {
+  ~Economic() {
+    DTOR("  ~Economic ", Problem);
+  }
+
+  void optimization() {
+    cout << "  Economic optimized\n";
+  }
+};
+
+struct Critical : public Protective {
+  ~Critical() {
+    DTOR("  ~Critical ", Problem);
+  }
+
+  void optimization() {
+    cout << "  Critical optimized\n";
+  }
+
+  void cleanup() {
+    cout << "  detailed cleanup\n";
+  }
+};
+
+struct NPC : public Protective {
+  ~NPC() {
+    DTOR("  ~NPC ", Problem);
+  }
+
+  void optimization() {
+    cout << "  NPC optimized\n";
+  }
+
+  void cleanup() {
+    cout << "  meticulous cleanup\n";
+  }
+};
 
 void demo(int seqNo) {
+  Fast fast;
+  Economic economic;
+  Critical critical;
+  NPC npc;
+
   cout << seqNo << ") << template_method::";
   cout << "homework::problem::demo() >>\n";
-  fast();
-  economic();
-  critical();
-  npc();
+  fast.coating();
+  economic.coating();
+  critical.coating();
+  npc.coating();
 }
 
 }  // problem
