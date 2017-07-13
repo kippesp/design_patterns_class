@@ -39,6 +39,16 @@ namespace observer {
 #include "solution/observer.h"
 }
 
+namespace decorator {
+#include "problem/decorator.h"
+//#include "solution/decorator.h"
+}
+
+namespace chainOfResponsibility {
+#include "problem/chainOfResp.h"
+//#include "solution/chainOfResp.h"
+}
+
 // Seam point - include next design pattern.
 }
 
@@ -75,6 +85,16 @@ int main(int argc, char* args[]) {
       homework::observer::legacy::demo(dp);
       homework::observer::problem::demo(dp);
       homework::observer::solution::demo(dp);
+      break;
+    case 6:
+      homework::decorator::legacy::demo(dp);
+      homework::decorator::problem::demo(dp);
+      //homework::decorator::solution::demo(dp);
+      break;
+    case 7:
+      homework::chainOfResponsibility::legacy::demo();
+      homework::chainOfResponsibility::problem::demo();
+      //homework::chainOfResponsibility::solution::demo();
       break;
 
     // Seam point - add next design pattern.
