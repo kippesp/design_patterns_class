@@ -141,118 +141,120 @@ void demo(int seqNo) {
 
 namespace problem {
 
-class Thing {
-  string name;
+struct Listener;
+
+struct Perpetrator {
+ private:
+  const string name;
+  list<Listener*> listeners;
 
  public:
-  Thing(string name) : name(name) {
+  Perpetrator(const string& name) : name(name) {
   }
+
+  ~Perpetrator() {
+    DTOR("~Perpetrator\n", Problem);
+    DTOR("  Listeners left should be zero = ", Problem);
+    char size[10];
+    sprintf(size, "%lu", listeners.size());
+    DTOR(string(size) + ".\n", Problem);
+  }
+
+  void attach(Listener* observer) {
+    listeners.push_back(observer);
+  }
+
+  void detach(Listener* observer) {
+    listeners.remove(observer);
+  }
+
+  void says(const string& phrase);
+};
+
+struct Listener {
+ protected:
+  const string name;
+
+ public:
+  Listener(string name) : name(name) {
+  }
+
+  virtual ~Listener() {
+    string inst = name + " ~Listener\n";
+    DTOR(inst, Problem);
+  }
+
+  virtual void update(Perpetrator*) {
+  }
+};
+
+void Perpetrator::says(const string& phrase) {
+  cout << "  " << name << " says " << phrase << ".\n";
+  list<Listener*>::iterator it = listeners.begin();
+  for (; it != listeners.end(); ++it) {
+    (*it)->update(this);
+  }
+}
+
+struct Thing : public Listener {
+  Thing(const string& name) : Listener(name) {
+  }
+
   ~Thing() {
     string inst = string("  ~Thing ") + name + "\n";
-    DTOR(inst, Homework);
+    DTOR(inst, Problem);
   }
 
- public:
-  void obeys() {
+  void update(Perpetrator*) {
     cout << "    Thing " << name << " makes mischief.\n";
   }
 };
 
-class Child {
-  string name;
-
- public:
-  Child(string name) : name(name) {
+struct Child : public Listener {
+  Child(const string& name) : Listener(name) {
   }
   ~Child() {
     string inst = string("  ~Child ") + name + "\n";
-    DTOR(inst, Homework);
+    DTOR(inst, Problem);
   }
 
- public:
-  void giggles() {
+  void update(Perpetrator*) {
     cout << "    " << name << " laughs.\n";
   }
 };
 
-class Fish {
-  string name;
-
- public:
-  Fish(string name) : name(name) {
+struct Fish : public Listener {
+  Fish(const string& name) : Listener(name) {
   }
+
   ~Fish() {
-    DTOR("  ~Fish\n", Homework);
+    DTOR("  ~Fish\n", Problem);
   }
 
- public:
-  void fumes() {
+  void update(Perpetrator*) {
     cout << "    " << name << " complains.\n";
   }
 };
 
-class Mom {
-  string name;
-
- public:
-  Mom(string name) : name(name) {
+struct Mom : public Listener {
+  Mom(const string& name) : Listener(name) {
   }
+
   ~Mom() {
-    DTOR("  ~Mom\n", Homework);
+    DTOR("  ~Mom\n", Problem);
   }
 
- public:
-  void queries() {
+  void update(Perpetrator*) {
     cout << "    " << name << " asks \"How was your day?\"\n";
   }
 };
 
 // Seam point - add another listener.
 
-class Perpetrator {
-  const string name;
-
- public:
-  Thing* thing1;
-  Thing* thing2;
-  Child* boy;
-  Child* girl;
-  Fish* fish;
-  Mom* mom;
-  // Seam point - insert another listener.
- public:
-  Perpetrator(const string& name)
-      : name(name),
-        thing1(0),
-        thing2(0),
-        boy(0),
-        girl(0),
-        fish(0),
-        mom(0)
-  // Seam point - insert another listener.
-  {
-  }
-  ~Perpetrator() {
-    DTOR("~Perpetrator\n", Homework);
-  }
-
- public:
-  void says(const string& phrase) {
-    cout << "  " << name << " says " << phrase << ".\n";
-    if (thing1) thing1->obeys();
-    if (thing2) thing2->obeys();
-    if (boy) boy->giggles();
-    if (girl) girl->giggles();
-    if (fish) fish->fumes();
-    if (mom) mom->queries();
-    // Seam point - insert another listener.
-  }
-};
-
 void demo(int seqNo) {
   cout << seqNo << ") << observer::homework::problem::demo() >>\n";
   {
-    Perpetrator perp("Cat in the Hat");
+    Perpetrator perpetrator("Cat in the Hat");
 
     Thing* thing1 = new Thing("1");
     Thing* thing2 = new Thing("2");
@@ -261,25 +263,33 @@ void demo(int seqNo) {
     Fish* fish = new Fish("Fish");
     Mom* mom = new Mom("Mom");
 
-    perp.thing1 = thing1;
-    perp.thing2 = thing2;
-    perp.says("Hello");
+    perpetrator.attach(thing1);
+    perpetrator.attach(thing2);
 
-    perp.boy = boy;
-    perp.girl = girl;
-    perp.says("Let's play");
+    perpetrator.says("Hello");
 
-    perp.thing2 = 0;  // Thing 2 leaves.
-    perp.fish = fish;
-    perp.says("Rock n Roll");
+    perpetrator.attach(boy);
+    perpetrator.attach(girl);
 
-    perp.thing1 = 0;           // Thing 1 leaves.
-    perp.boy = perp.girl = 0;  // Children go mum.
-    perp.mom = mom;
-    perp.says("Bye");
+    perpetrator.says("Let's play");
 
-    perp.fish = 0;
-    perp.mom = 0;
+    perpetrator.detach(thing2);
+    perpetrator.attach(fish);
+
+    perpetrator.says("Rock 'n Roll");
+
+    perpetrator.detach(thing1);
+    perpetrator.detach(boy);
+    perpetrator.detach(girl);
+    perpetrator.attach(mom);
+
+    perpetrator.says("Bye");
+
+    perpetrator.detach(fish);
+    perpetrator.detach(mom);
+
+    perpetrator.detach(fish);
+    perpetrator.detach(mom);
 
     delete thing1;
     delete thing2;
