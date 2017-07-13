@@ -180,7 +180,7 @@ struct Listener {
   }
 
   virtual ~Listener() {
-    string inst = name + " ~Listener\n";
+    string inst = " ~Listener\n";
     DTOR(inst, Problem);
   }
 
@@ -201,7 +201,7 @@ struct Thing : public Listener {
   }
 
   ~Thing() {
-    string inst = string("  ~Thing ") + name + "\n";
+    string inst = string("  ~Thing ") + name;
     DTOR(inst, Problem);
   }
 
@@ -214,7 +214,7 @@ struct Child : public Listener {
   Child(const string& name) : Listener(name) {
   }
   ~Child() {
-    string inst = string("  ~Child ") + name + "\n";
+    string inst = string("  ~Child ") + name;
     DTOR(inst, Problem);
   }
 
@@ -228,7 +228,7 @@ struct Fish : public Listener {
   }
 
   ~Fish() {
-    DTOR("  ~Fish\n", Problem);
+    DTOR("  ~Fish", Problem);
   }
 
   void update(Perpetrator*) {
@@ -241,7 +241,7 @@ struct Mom : public Listener {
   }
 
   ~Mom() {
-    DTOR("  ~Mom\n", Problem);
+    DTOR("  ~Mom", Problem);
   }
 
   void update(Perpetrator*) {
