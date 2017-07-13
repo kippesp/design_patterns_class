@@ -36,7 +36,7 @@ namespace templateMethod {
 
 namespace observer {
 #include "problem/observer.h"
-//#include "solution/observer.h"
+#include "solution/observer.h"
 }
 
 // Seam point - include next design pattern.
@@ -74,7 +74,7 @@ int main(int argc, char* args[]) {
     case 5:
       homework::observer::legacy::demo(dp);
       homework::observer::problem::demo(dp);
-      // homework::observer::solution::demo(dp);
+      homework::observer::solution::demo(dp);
       break;
 
     // Seam point - add next design pattern.
