@@ -44,6 +44,7 @@ class RunAbout : public Car {
  public:
   RunAbout() : Car("RunAbout") {
   }
+
   ~RunAbout() {
     DTOR("  ~RunAbout ", Homework);
   }
@@ -53,15 +54,18 @@ class RunAbout : public Car {
     string desc = str + " with 4 wheels" + ", 2 doors";
     return desc;
   }
+
   double getCost() {
     double cost = 12000.00 + 2000.00;
     return cost;
   }
 };
+
 class SUV : public Car {
  public:
   SUV() : Car("SUV") {
   }
+
   ~SUV() {
     DTOR("  ~SUV ", Homework);
   }
@@ -72,6 +76,7 @@ class SUV : public Car {
                   ", automatic transmission";
     return desc;
   }
+
   double getCost() {
     double cost = 12000.00 + 4000.00 + 1500.00 + 3000.00;
     return cost;
@@ -97,93 +102,193 @@ namespace problem {
 
 using namespace common;
 
-class RunAbout : public Car {
- public:
-  RunAbout() : Car("RunAbout") {
-  }
-  ~RunAbout() {
-    DTOR("  ~RunAbout ", Homework);
+struct BasicCar : public Car {
+  BasicCar(string name = "blank") : Car(name + " with 4 wheels") {
   }
 
- public:
-  string getDesc() {
-    string desc = str + " with 4 wheels" + ", 2 doors";
-    return desc;
-  }
-  double getCost() {
-    double cost = 12000.00 + 2000.00;
-    return cost;
-  }
-};
-class SUV : public Car {
- public:
-  SUV() : Car("SUV") {
-  }
-  ~SUV() {
-    DTOR("  ~SUV ", Homework);
+  ~BasicCar() {
+    DTOR("  ~BasicCar ", Problem);
   }
 
- public:
   string getDesc() {
-    string desc = str + " with 4 wheels" + ", 4 doors" + ", AC" +
-                  ", automatic transmission";
-    return desc;
-  }
-  double getCost() {
-    double cost = 12000.00 + 4000.00 + 1500.00 + 3000.00;
-    return cost;
-  }
-};
-class Status : public Car {
- public:
-  Status() : Car("Status") {
-  }
-  ~Status() {
-    DTOR("  ~Status ", Homework);
+    return string(str);
   }
 
- public:
-  string getDesc() {
-    string desc = str + " with 4 wheels" + ", 4 doors" + ", AC" +
-                  ", premium sound system" + ", navigation" +
-                  ", automatic transmission"
-        // Seam: new options scales as the number of car models.
-        ;
-    return desc;
-  }
   double getCost() {
-    double cost = 12000.00 + 4000.00 + 1500.00 + 1000.00 + 2000.00 + 3000.00;
-    return cost;
+    return 12000.00;
   }
 };
-class Performance : public Car {
- public:
-  Performance() : Car("Performance") {
-  }
-  ~Performance() {
-    DTOR("  ~Performance ", Homework);
+
+struct OptionsDecorator : public Car {
+  OptionsDecorator(Car* build, string str = "OD") : Car(str), build(build) {
   }
 
- public:
-  string getDesc() {
-    string desc = str + " with 4 wheels" + ", 2 doors" + ", AC" +
-                  ", premium sound system" + ", navigation" +
-                  ", manual transmission" + ", V8" + ", super-charger";
-    return desc;
+  ~OptionsDecorator() {
+    build->~Car();
+    DTOR("    ~OptionsDecorator ", Problem);
   }
+
+  string getDesc() {
+    return build->getDesc() + ", " + str;
+  }
+
+  static Car* makeObject(Car* car, string& criteria);
+
+ protected:
+  Car* build;
+};
+
+struct TwoDoors : public OptionsDecorator {
+  TwoDoors(Car* build) : OptionsDecorator(build, "2 doors") {
+  }
+
+  ~TwoDoors() {
+    DTOR("  ~TwoDoors ", Problem);
+  }
+
   double getCost() {
-    double cost = 12000.00 + 2000.00 + 1500.00 + 1000.00 + 2000.00 + 2500.00 +
-                  6000.00 + 3000.00;
-    return cost;
+    return build->getCost() + 2000.00;
   }
 };
+
+struct FourDoors : public OptionsDecorator {
+  FourDoors(Car* build) : OptionsDecorator(build, "4 doors") {
+  }
+
+  ~FourDoors() {
+    DTOR("  ~FourDoors ", Problem);
+  }
+
+  double getCost() {
+    return build->getCost() + 4000.00;
+  }
+};
+
+struct AC : public OptionsDecorator {
+  AC(Car* build) : OptionsDecorator(build, "AC") {
+  }
+
+  ~AC() {
+    DTOR("  ~AC ", Problem);
+  }
+
+  double getCost() {
+    return build->getCost() + 1500.00;
+  }
+};
+
+struct AutomaticTransission : public OptionsDecorator {
+  AutomaticTransission(Car* build)
+      : OptionsDecorator(build, "AutomaticTransission") {
+  }
+
+  ~AutomaticTransission() {
+    DTOR("  ~AutomaticTransission ", Problem);
+  }
+
+  double getCost() {
+    return build->getCost() + 3000.00;
+  }
+};
+
+struct PremiumSound : public OptionsDecorator {
+  PremiumSound(Car* build) : OptionsDecorator(build, "PremiumSound") {
+  }
+
+  ~PremiumSound() {
+    DTOR("  ~PremiumSound ", Problem);
+  }
+
+  double getCost() {
+    return build->getCost() + 1000.00;
+  }
+};
+
+struct Navigation : public OptionsDecorator {
+  Navigation(Car* build) : OptionsDecorator(build, "Navigation") {
+  }
+
+  ~Navigation() {
+    DTOR("  ~Navigation ", Problem);
+  }
+
+  double getCost() {
+    return build->getCost() + 3000.00;
+  }
+};
+
+struct SuperCharger : public OptionsDecorator {
+  SuperCharger(Car* build) : OptionsDecorator(build, "super-charger") {
+  }
+
+  ~SuperCharger() {
+    DTOR("  ~SuperCharger ", Problem);
+  }
+
+  double getCost() {
+    return build->getCost() + 3000.00;
+  }
+};
+
+struct V8Upcharge : public OptionsDecorator {
+  V8Upcharge(Car* build) : OptionsDecorator(build, "V8") {
+  }
+
+  ~V8Upcharge() {
+    DTOR("  ~V8Upcharge ", Problem);
+  }
+
+  double getCost() {
+    return build->getCost() + 6000.00;
+  }
+};
+
 // Seam point - add another set of options.
 
+Car* OptionsDecorator::makeObject(Car* car, string& criteria) {
+  if (criteria == "TwoDoors")
+    return new TwoDoors(car);
+  else if (criteria == "FourDoors")
+    return new FourDoors(car);
+  else if (criteria == "AC")
+    return new AC(car);
+  else if (criteria == "AutomaticTransission")
+    return new AutomaticTransission(car);
+  else if (criteria == "PremiumSound")
+    return new PremiumSound(car);
+  else if (criteria == "Navigation")
+    return new Navigation(car);
+  else if (criteria == "SuperCharger")
+    return new SuperCharger(car);
+  else if (criteria == "V8Upcharge")
+    return new V8Upcharge(car);
+  // Seam point - add another set of options.
+  else
+    return car;
+};
+
 void demo(int /* seqNo */) {
-  Car* mine = new RunAbout;
-  Car* yours = new SUV;
-  Car* hers = new Status;
-  Car* boss = new Performance;
+  Car* mine = new BasicCar("RunAbout");
+  mine = new TwoDoors(mine);
+
+  Car* yours = new BasicCar("SUV");
+  yours = new FourDoors(yours);
+  yours = new AC(yours);
+  yours = new AutomaticTransission(yours);
+
+  Car* hers = new BasicCar("Status");
+  hers = new FourDoors(hers);
+  hers = new AC(hers);
+  hers = new PremiumSound(hers);
+  hers = new Navigation(hers);
+  hers = new AutomaticTransission(hers);
+
+  Car* boss = new BasicCar("Performance");
+  boss = new FourDoors(boss);
+  boss = new AC(boss);
+  boss = new PremiumSound(boss);
+  boss = new Navigation(boss);
+  boss = new AutomaticTransission(boss);
 
   Car* cars[] = {mine, yours, hers, boss};
 
@@ -193,7 +298,9 @@ void demo(int /* seqNo */) {
   }
   cout << endl;
 
-  for (size_t i = 0; i < COUNT(cars); i++) delete cars[i];
+  for (size_t i = 0; i < COUNT(cars); i++) {
+    delete cars[i];
+  }
   cout << endl;
 }
 
