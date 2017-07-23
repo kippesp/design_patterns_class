@@ -191,6 +191,20 @@ struct AutomaticTransission : public OptionsDecorator {
   }
 };
 
+struct ManualTransission : public OptionsDecorator {
+  ManualTransission(Car* build)
+      : OptionsDecorator(build, "ManualTransission") {
+  }
+
+  ~ManualTransission() {
+    DTOR("  ~ManualTransission ", Problem);
+  }
+
+  double getCost() {
+    return build->getCost() + 2500.00;
+  }
+};
+
 struct PremiumSound : public OptionsDecorator {
   PremiumSound(Car* build) : OptionsDecorator(build, "PremiumSound") {
   }
@@ -213,7 +227,7 @@ struct Navigation : public OptionsDecorator {
   }
 
   double getCost() {
-    return build->getCost() + 3000.00;
+    return build->getCost() + 2000.00;
   }
 };
 
@@ -284,11 +298,13 @@ void demo(int /* seqNo */) {
   hers = new AutomaticTransission(hers);
 
   Car* boss = new BasicCar("Performance");
-  boss = new FourDoors(boss);
+  boss = new TwoDoors(boss);
   boss = new AC(boss);
   boss = new PremiumSound(boss);
   boss = new Navigation(boss);
-  boss = new AutomaticTransission(boss);
+  boss = new ManualTransission(boss);
+  boss = new V8Upcharge(boss);
+  boss = new SuperCharger(boss);
 
   Car* cars[] = {mine, yours, hers, boss};
 
