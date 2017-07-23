@@ -99,8 +99,6 @@ struct Approver {
     DTOR("  ~Approver\n", Homework);
   }
 
-  Approver* setupChain();
-
   static Approver* makeObject(const string& criteria);
   void setSuccessor(Approver* approver) {
     successor = approver;
@@ -112,7 +110,7 @@ struct Lieutenant : Approver {
     cout << "  +Lieutenant\n";
   }
   ~Lieutenant() {
-    DTOR("  ~Lieutenant\n", Homework);
+    DTOR("  ~Lieutenant", Homework);
   }
 
   void makeDecision(int livesAtRisk) {
@@ -125,7 +123,7 @@ struct Captain : Approver {
     cout << "  +Captain\n";
   }
   ~Captain() {
-    DTOR("  ~Captain\n", Homework);
+    DTOR("  ~Captain", Homework);
   }
 
   void makeDecision(int livesAtRisk) {
@@ -135,7 +133,7 @@ struct Captain : Approver {
 
 struct Major : Approver {
   Major() {
-    cout << "  +Major\n";
+    cout << "  +Major";
   }
   ~Major() {
     DTOR("  ~Major\n", Homework);
@@ -151,7 +149,7 @@ struct Colonel : Approver {
     cout << "  +Colonel\n";
   }
   ~Colonel() {
-    DTOR("  ~Colonel\n", Homework);
+    DTOR("  ~Colonel", Homework);
   }
 
   void makeDecision(int livesAtRisk) {
@@ -164,7 +162,7 @@ struct General : Approver {
     cout << "  +General\n";
   }
   ~General() {
-    DTOR("  ~General\n", Homework);
+    DTOR("  ~General", Homework);
   }
 
   void makeDecision(int livesAtRisk) {
@@ -177,7 +175,7 @@ struct CommanderInChief : Approver {
     cout << "  +CommanderInChief\n";
   }
   ~CommanderInChief() {
-    DTOR("  ~CommanderInChief\n", Homework);
+    DTOR("  ~CommanderInChief", Homework);
   }
 
   void makeDecision(int livesAtRisk) {
@@ -185,7 +183,7 @@ struct CommanderInChief : Approver {
   }
 };
 
-Approver* Approver::setupChain() {
+Approver* setupChain() {
   string chain[] = {"lieutenant", "captain", "major",
                     "colonel",    "general", "commanderinchief"};
 
@@ -217,6 +215,7 @@ Approver* Approver::makeObject(const string& criteria) {
     return new General;
   else if (criteria == "commanderinchief")
     return new CommanderInChief;
+  // Seam point - add another Officer.
   else
     throw "oops";
 }
@@ -240,6 +239,7 @@ void setup() {
   pres = new CommanderInChief;
   // Seam point - insert another officer.
 }
+
 void teardown() {
   delete lieutenant;
   delete captain;
