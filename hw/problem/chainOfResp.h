@@ -86,8 +86,28 @@ void demo() {
 
 namespace problem {
 
-class Lieutenant {
+struct Approver {
+ protected:
+  Approver* successor;
+
  public:
+  Approver() {
+    cout << "  +Approver\n";
+  }
+
+  ~Approver() {
+    DTOR("  ~Approver\n", Homework);
+  }
+
+  Approver* setupChain();
+
+  static Approver* makeObject(const string& criteria);
+  void setSuccessor(Approver* approver) {
+    successor = approver;
+  }
+};
+
+struct Lieutenant : Approver {
   Lieutenant() {
     cout << "  +Lieutenant\n";
   }
@@ -95,14 +115,12 @@ class Lieutenant {
     DTOR("  ~Lieutenant\n", Homework);
   }
 
- public:
   void makeDecision(int livesAtRisk) {
     cout << "  Lieutenant charges " << livesAtRisk << ".\n";
   }
 };
 
-class Captain {
- public:
+struct Captain : Approver {
   Captain() {
     cout << "  +Captain\n";
   }
@@ -110,14 +128,12 @@ class Captain {
     DTOR("  ~Captain\n", Homework);
   }
 
- public:
   void makeDecision(int livesAtRisk) {
     cout << "  Captain retreats " << livesAtRisk << ".\n";
   }
 };
 
-class Major {
- public:
+struct Major : Approver {
   Major() {
     cout << "  +Major\n";
   }
@@ -125,14 +141,12 @@ class Major {
     DTOR("  ~Major\n", Homework);
   }
 
- public:
   void makeDecision(int livesAtRisk) {
     cout << "  Major flanks " << livesAtRisk << ".\n";
   }
 };
 
-class Colonel {
- public:
+struct Colonel : Approver {
   Colonel() {
     cout << "  +Colonel\n";
   }
@@ -140,14 +154,12 @@ class Colonel {
     DTOR("  ~Colonel\n", Homework);
   }
 
- public:
   void makeDecision(int livesAtRisk) {
     cout << "  Colonel gathers intel " << livesAtRisk << ".\n";
   }
 };
 
-class General {
- public:
+struct General : Approver {
   General() {
     cout << "  +General\n";
   }
@@ -155,14 +167,12 @@ class General {
     DTOR("  ~General\n", Homework);
   }
 
- public:
   void makeDecision(int livesAtRisk) {
     cout << "  General strategizes " << livesAtRisk << ".\n";
   }
 };
 
-class CommanderInChief {
- public:
+struct CommanderInChief : Approver {
   CommanderInChief() {
     cout << "  +CommanderInChief\n";
   }
@@ -170,11 +180,46 @@ class CommanderInChief {
     DTOR("  ~CommanderInChief\n", Homework);
   }
 
- public:
   void makeDecision(int livesAtRisk) {
     cout << "  Pres negotiates " << livesAtRisk << ".\n";
   }
 };
+
+Approver* Approver::setupChain() {
+  string chain[] = {"lieutenant", "captain", "major",
+                    "colonel",    "general", "commanderinchief"};
+
+  Approver* responder = Approver::makeObject(chain[0]);
+
+  Approver* current = responder;
+
+  for (size_t i = 1; i < COUNT(chain); i++) {
+    Approver* next = Approver::makeObject(chain[i]);
+    current->setSuccessor(next);
+    current = next;
+  }
+
+  current->setSuccessor(new Approver);
+
+  return responder;
+}
+
+Approver* Approver::makeObject(const string& criteria) {
+  if (criteria == "lieutenant")
+    return new Lieutenant;
+  else if (criteria == "captain")
+    return new Captain;
+  else if (criteria == "major")
+    return new Major;
+  else if (criteria == "colonel")
+    return new Colonel;
+  else if (criteria == "general")
+    return new General;
+  else if (criteria == "commanderinchief")
+    return new CommanderInChief;
+  else
+    throw "oops";
+}
 
 // Seam point - add another officer class.
 
@@ -210,8 +255,8 @@ void clientCode(int livesAtRisk) {
     lieutenant->makeDecision(livesAtRisk);
   else if (livesAtRisk < 20)
     captain->makeDecision(livesAtRisk);
-  //  else if(livesAtRisk < 100)        // KIA, but can't
-  //    major->makeDecision(livesAtRisk); // change at runtime.
+  else if (livesAtRisk < 100)          // KIA, but can't
+    major->makeDecision(livesAtRisk);  // change at runtime.
   else if (livesAtRisk < 5000)
     colonel->makeDecision(livesAtRisk);
   else if (livesAtRisk < 100000)
