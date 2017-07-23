@@ -46,7 +46,7 @@ namespace decorator {
 
 namespace chainOfResponsibility {
 #include "problem/chainOfResp.h"
-//#include "solution/chainOfResp.h"
+#include "solution/chainOfResp.h"
 }
 
 // Seam point - include next design pattern.
@@ -94,7 +94,7 @@ int main(int argc, char* args[]) {
     case 7:
       homework::chainOfResponsibility::legacy::demo();
       homework::chainOfResponsibility::problem::demo();
-      //homework::chainOfResponsibility::solution::demo();
+      homework::chainOfResponsibility::solution::demo();
       break;
 
     // Seam point - add next design pattern.
