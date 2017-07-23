@@ -49,6 +49,16 @@ namespace chainOfResponsibility {
 #include "solution/chainOfResp.h"
 }
 
+namespace bridge {
+#include "problem/bridge.h"
+//#include "solution/bridge.h"
+}
+
+namespace abstractFactory {
+#include "problem/abstractFactory.h"
+//#include "solution/bridge.h"
+}
+
 // Seam point - include next design pattern.
 }
 
@@ -95,6 +105,16 @@ int main(int argc, char* args[]) {
       homework::chainOfResponsibility::legacy::demo();
       homework::chainOfResponsibility::problem::demo();
       homework::chainOfResponsibility::solution::demo();
+      break;
+    case 8:
+      homework::bridge::legacy::demo();
+      homework::bridge::problem::demo();
+      // homework::bridge::solution::demo();
+      break;
+    case 9:
+      homework::abstractFactory::legacy::demo();
+      homework::abstractFactory::problem::demo();
+      // homework::bridge::solution::demo();
       break;
 
     // Seam point - add next design pattern.
