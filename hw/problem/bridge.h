@@ -62,6 +62,7 @@ void drawLine(double x1, double y1, double x2, double y2) {
   cout << "    Draw vector line: [" << x1 << "," << y1 << "] [" << x2 << ","
        << y2 << "]\n";
 }
+
 void drawArc(double x1, double y1, double x2, double y2) {
   cout << "    Draw vector arc: (" << x1 << "," << y1 << ") (" << x2 << ","
        << y2 << ")\n";
@@ -75,6 +76,7 @@ void draw_line(double x1, double y1, double x2, double y2) {
   cout << "    Draw raster line: [" << x1 << "," << y1 << "] [" << x2 << ","
        << y2 << "]\n";
 }
+
 void draw_arc(double x1, double y1, double x2, double y2) {
   cout << "    Draw raster arc: (" << x1 << "," << y1 << ") (" << x2 << ","
        << y2 << ")\n";
@@ -89,6 +91,7 @@ void draw_a_line(double x1, double y1, double x2, double y2) {
   cout << "    Draw plotter line: [" << x1 << "," << y1 << "] [" << x2 << ","
        << y2 << "]\n";
 }
+
 void draw_an_arc(double x1, double y1, double x2, double y2) {
   cout << "    Draw plotter arc: (" << x1 << "," << y1 << ") (" << x2 << ","
        << y2 << ")\n";
@@ -110,14 +113,79 @@ enum Render {
   // Seam point - insert another enumerated type.
 };
 
-class Shape {
+struct Platform {
+  virtual ~Platform() {
+    DTOR("~Platform\n", Homework);
+  }
+
+  virtual void line(double x1, double y1, double x2, double y2) = 0;
+  virtual void arc(double x1, double y1, double x2, double y2) = 0;
+
+  static Platform* makeObject(const Render renderPlatform);
+};
+
+struct Vector : public Platform {
+  ~Vector() {
+    DTOR("~Vector ", Homework);
+  }
+
+  void line(double x1, double y1, double x2, double y2) {
+    drawLine(x1, y1, x2, y2);
+  }
+
+  void arc(double x1, double y1, double x2, double y2) {
+    drawArc(x1, y1, x2, y2);
+  }
+};
+
+struct Raster : public Platform {
+  ~Raster() {
+    DTOR("~Raster ", Homework);
+  }
+
+  void line(double x1, double y1, double x2, double y2) {
+    draw_line(x1, y1, x2, y2);
+  }
+  void arc(double x1, double y1, double x2, double y2) {
+    draw_arc(x1, y1, x2, y2);
+  }
+};
+
+// Seam point - add another platform.
+
+Platform* Platform::makeObject(const Render renderPlatform) {
+  switch (renderPlatform) {
+    case VECTOR:
+      return new Vector;
+      break;
+    case RASTER:
+      return new Raster;
+      break;
+    // Seam point - insert another Render platform.
+    default:
+      throw "Oops!";
+      break;
+  }
+}
+
+struct Shape {
+ protected:
+  Platform* platform;
+
  public:
   virtual ~Shape() {
     DTOR(" ~Shape\n", Homework);
   }
-  virtual void draw(Render plat) = 0;
+
+  void setPlatform(Platform* platform) {
+    this->platform = platform;
+  }
+
+  virtual void draw() = 0;
 };
-class Rectangle : public Shape {
+
+struct Rectangle : public Shape {
+ private:
   double x1;
   double y1;
   double x2;
@@ -127,35 +195,22 @@ class Rectangle : public Shape {
   Rectangle(double x1, double y1, double x2, double y2)
       : x1(x1), y1(y1), x2(x2), y2(y2) {
   }
+
   ~Rectangle() {
     DTOR("  ~Rectangle", Homework);
   }
 
- public:
-  void draw(Render platform) {
-    switch (platform) {
-      case VECTOR:
-        cout << "  Rectangle.draw(x1,y1, x2,y2)<vector>\n";
-        drawLine(x1, y1, x2, y1);
-        drawLine(x2, y1, x2, y2);
-        drawLine(x2, y2, x1, y2);
-        drawLine(x1, y2, x1, y1);
-        break;
-      case RASTER:
-        cout << "  Rectangle.draw(x1,y1, x2,y2)<raster>\n";
-        draw_line(x1, y1, x2, y1);
-        draw_line(x2, y1, x2, y2);
-        draw_line(x2, y2, x1, y2);
-        draw_line(x1, y2, x1, y1);
-        break;
-      // Seam point - insert another render platform.
-      default:
-        cout << "  OOPS!\n";
-        break;
-    }
+  void draw() {
+    cout << "  Rectangle.draw(x1,y1, x2,y2)<platform>\n";
+    platform->line(x1, y1, x2, y1);
+    platform->line(x2, y1, x2, y2);
+    platform->line(x2, y2, x1, y2);
+    platform->line(x1, y2, x1, y1);
   }
 };
-class Circle : public Shape {
+
+struct Circle : public Shape {
+ private:
   double x;
   double y;
   double r;
@@ -163,52 +218,43 @@ class Circle : public Shape {
  public:
   Circle(double x, double y, double radius) : x(x), y(y), r(radius) {
   }
+
   ~Circle() {
     DTOR("  ~Circle", Homework);
   }
 
- public:
-  void draw(Render platform) {
-    switch (platform) {
-      case VECTOR:
-        cout << "  Circle.draw(x,y, radius)<vector>\n";
-        drawArc(x, y + r, x + r, y);
-        drawArc(x + r, y, x, y - r);
-        drawArc(x, y - r, x - r, y);
-        drawArc(x - r, y, x, y + r);
-        break;
-      case RASTER:
-        cout << "  Circle.draw(x,y, radius)<raster>\n";
-        draw_arc(x, y + r, x + r, y);
-        draw_arc(x + r, y, x, y - r);
-        draw_arc(x, y - r, x - r, y);
-        draw_arc(x - r, y, x, y + r);
-        break;
-      // Seam point - insert another render platform.
-      default:
-        cout << "  OOPS!\n";
-        break;
-    }
+  void draw() {
+    cout << "  Circle.draw(x,y, radius)<platform>\n";
+    platform->arc(x, y + r, x + r, y);
+    platform->arc(x + r, y, x, y - r);
+    platform->arc(x, y - r, x - r, y);
+    platform->arc(x - r, y, x, y + r);
   }
 };
 // Seam point - add another shape.
 
-void clientCode(Shape* shape, Render platform) {
-  shape->draw(platform);
+void clientCode(Shape* shape) {
+  shape->draw();
 }
 
 void demo() {
   Shape* shapes[] = {new Rectangle(1, 1, 2, 3), new Circle(4, 4, 1.0)};
   Render platforms[] = {VECTOR, RASTER};
+  vector<Platform*> platform;
+
+  for (size_t j = 0; j < COUNT(platforms); j++)
+    platform.push_back(Platform::makeObject(platforms[j]));
 
   for (size_t i = 0; i < COUNT(shapes); i++) {
     for (size_t j = 0; j < COUNT(platforms); j++) {
-      clientCode(shapes[i], platforms[j]);
+      shapes[i]->setPlatform(platform[j]);
+      clientCode(shapes[i]);
     }
     cout << endl;
   }
 
   for (size_t i = 0; i < COUNT(shapes); i++) delete shapes[i];
+  for (size_t i = 0; i < COUNT(platforms); i++) delete platform[i];
   cout << endl;
 }
 
@@ -227,14 +273,95 @@ enum Render {
   // Seam point - insert another enumerated type.
 };
 
-class Shape {
+struct Platform {
+  virtual ~Platform() {
+    DTOR("~Platform\n", Homework);
+  }
+
+  virtual void line(double x1, double y1, double x2, double y2) = 0;
+  virtual void arc(double x1, double y1, double x2, double y2) = 0;
+
+  static Platform* makeObject(const Render renderPlatform);
+};
+
+struct Vector : public Platform {
+  ~Vector() {
+    DTOR("~Vector ", Homework);
+  }
+
+  void line(double x1, double y1, double x2, double y2) {
+    drawLine(x1, y1, x2, y2);
+  }
+
+  void arc(double x1, double y1, double x2, double y2) {
+    drawArc(x1, y1, x2, y2);
+  }
+};
+
+struct Raster : public Platform {
+  ~Raster() {
+    DTOR("~Raster ", Homework);
+  }
+
+  void line(double x1, double y1, double x2, double y2) {
+    draw_line(x1, y1, x2, y2);
+  }
+  void arc(double x1, double y1, double x2, double y2) {
+    draw_arc(x1, y1, x2, y2);
+  }
+};
+
+struct Plotter : public Platform {
+  ~Plotter() {
+    DTOR("~Plotter ", Homework);
+  }
+
+  void line(double x1, double y1, double x2, double y2) {
+    draw_line(x1, y1, x2, y2);
+  }
+  void arc(double x1, double y1, double x2, double y2) {
+    draw_arc(x1, y1, x2, y2);
+  }
+};
+
+// Seam point - add another platform.
+
+Platform* Platform::makeObject(const Render renderPlatform) {
+  switch (renderPlatform) {
+    case VECTOR:
+      return new Vector;
+      break;
+    case RASTER:
+      return new Raster;
+      break;
+    case PLOTTER:
+      return new Plotter;
+      break;
+    // Seam point - insert another Render platform.
+    default:
+      throw "Oops!";
+      break;
+  }
+}
+
+struct Shape {
+ protected:
+  Platform* platform;
+
  public:
   virtual ~Shape() {
     DTOR(" ~Shape\n", Homework);
   }
-  virtual void draw(Render plat) = 0;
+
+  void setPlatform(Platform* platform) {
+    this->platform = platform;
+  }
+
+  virtual void draw() = 0;
 };
-class Rectangle : public Shape {
+
+struct Rectangle : public Shape {
+ private:
   double x1;
   double y1;
   double x2;
@@ -244,41 +371,20 @@ class Rectangle : public Shape {
   Rectangle(double x1, double y1, double x2, double y2)
       : x1(x1), y1(y1), x2(x2), y2(y2) {
   }
+
   ~Rectangle() {
     DTOR("  ~Rectangle", Homework);
   }
 
- public:
-  void draw(Render platform) {
-    switch (platform) {
-      case VECTOR:
-        cout << "  Rectangle.draw(x1,y1, x2,y2)<vector>\n";
-        drawLine(x1, y1, x2, y1);
-        drawLine(x2, y1, x2, y2);
-        drawLine(x2, y2, x1, y2);
-        drawLine(x1, y2, x1, y1);
-        break;
-      case RASTER:
-        cout << "  Rectangle.draw(x1,y1, x2,y2)<raster>\n";
-        draw_line(x1, y1, x2, y1);
-        draw_line(x2, y1, x2, y2);
-        draw_line(x2, y2, x1, y2);
-        draw_line(x1, y2, x1, y1);
-        break;
-      case PLOTTER:
-        cout << "  Rectangle.draw(x1,y1, x2,y2)<plotter>\n";
-        draw_a_line(x1, y1, x2, y1);
-        draw_a_line(x2, y1, x2, y2);
-        draw_a_line(x2, y2, x1, y2);
-        draw_a_line(x1, y2, x1, y1);
-        break;
-      // Seam point - insert another render platform.
-      default:
-        cout << "  OOPS!\n";
-        break;
-    }
+  void draw() {
+    cout << "  Rectangle.draw(x1,y1, x2,y2)<platform>\n";
+    platform->line(x1, y1, x2, y1);
+    platform->line(x2, y1, x2, y2);
+    platform->line(x2, y2, x1, y2);
+    platform->line(x1, y2, x1, y1);
   }
 };
+
 class Circle : public Shape {
   double x;
   double y;
@@ -287,41 +393,20 @@ class Circle : public Shape {
  public:
   Circle(double x, double y, double radius) : x(x), y(y), r(radius) {
   }
+
   ~Circle() {
     DTOR("  ~Circle", Homework);
   }
 
- public:
-  void draw(Render platform) {
-    switch (platform) {
-      case VECTOR:
-        cout << "  Circle.draw(x,y, radius)<vector>\n";
-        drawArc(x, y + r, x + r, y);
-        drawArc(x + r, y, x, y - r);
-        drawArc(x, y - r, x - r, y);
-        drawArc(x - r, y, x, y + r);
-        break;
-      case RASTER:
-        cout << "  Circle.draw(x,y, radius)<raster>\n";
-        draw_arc(x, y + r, x + r, y);
-        draw_arc(x + r, y, x, y - r);
-        draw_arc(x, y - r, x - r, y);
-        draw_arc(x - r, y, x, y + r);
-        break;
-      case PLOTTER:
-        cout << "  Circle.draw(x,y, radius)<plotter>\n";
-        draw_an_arc(x, y + r, x + r, y);
-        draw_an_arc(x + r, y, x, y - r);
-        draw_an_arc(x, y - r, x - r, y);
-        draw_an_arc(x - r, y, x, y + r);
-        break;
-      // Seam point - insert another render platform.
-      default:
-        cout << "  OOPS!\n";
-        break;
-    }
+  void draw() {
+    cout << "  Circle.draw(x,y, radius)<platform>\n";
+    platform->arc(x, y + r, x + r, y);
+    platform->arc(x + r, y, x, y - r);
+    platform->arc(x, y - r, x - r, y);
+    platform->arc(x - r, y, x, y + r);
   }
 };
+
 class Triangle : public Shape {
   pair<double, double> vert1;
   pair<double, double> vert2;
@@ -332,42 +417,22 @@ class Triangle : public Shape {
            pair<double, double> vert3)
       : vert1(vert1), vert2(vert2), vert3(vert3) {
   }
+
   ~Triangle() {
     DTOR("  ~Triangle", Homework);
   }
 
- public:
-  void draw(Render platform) {
-    switch (platform) {
-      case VECTOR:
-        cout << "  Triangle.draw(vert1, vert2, vert3)<vector>\n";
-        drawLine(vert1.first, vert1.second, vert2.first, vert2.second);
-        drawLine(vert2.first, vert2.second, vert3.first, vert3.second);
-        drawLine(vert3.first, vert3.second, vert1.first, vert1.second);
-        break;
-      case RASTER:
-        cout << "  Triangle.draw(vert1, vert2, vert3)<raster>\n";
-        draw_line(vert1.first, vert1.second, vert2.first, vert2.second);
-        draw_line(vert2.first, vert2.second, vert3.first, vert3.second);
-        draw_line(vert3.first, vert3.second, vert1.first, vert1.second);
-        break;
-      case PLOTTER:
-        cout << "  Triangle.draw(vert1, vert2, vert3)<plotter>\n";
-        draw_a_line(vert1.first, vert1.second, vert2.first, vert2.second);
-        draw_a_line(vert2.first, vert2.second, vert3.first, vert3.second);
-        draw_a_line(vert3.first, vert3.second, vert1.first, vert1.second);
-        break;
-      // Seam point - insert another render platform.
-      default:
-        cout << "  OOPS!\n";
-        break;
-    }
+  void draw() {
+    cout << "  Triangle.draw(vert1, vert2, vert3)<platform>\n";
+    platform->line(vert1.first, vert1.second, vert2.first, vert2.second);
+    platform->line(vert2.first, vert2.second, vert3.first, vert3.second);
+    platform->line(vert3.first, vert3.second, vert1.first, vert1.second);
   }
 };
 // Seam point - add another shape.
 
-void clientCode(Shape* shape, Render platform) {
-  shape->draw(platform);
+void clientCode(Shape* shape) {
+  shape->draw();
 }
 
 void demo() {
@@ -375,15 +440,21 @@ void demo() {
                      new Triangle(make_pair(1.0, 1.0), make_pair(2.0, 2.0),
                                   make_pair(2.0, 1.0))};
   Render platforms[] = {VECTOR, RASTER, PLOTTER};
+  vector<Platform*> platform;
+
+  for (size_t j = 0; j < COUNT(platforms); j++)
+    platform.push_back(Platform::makeObject(platforms[j]));
 
   for (size_t i = 0; i < COUNT(shapes); i++) {
     for (size_t j = 0; j < COUNT(platforms); j++) {
-      clientCode(shapes[i], platforms[j]);
+      shapes[i]->setPlatform(platform[j]);
+      clientCode(shapes[i]);
     }
     cout << endl;
   }
 
   for (size_t i = 0; i < COUNT(shapes); i++) delete shapes[i];
+  for (size_t i = 0; i < COUNT(platforms); i++) delete platform[i];
   cout << endl;
 }
 
