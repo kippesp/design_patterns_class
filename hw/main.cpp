@@ -41,7 +41,7 @@ namespace observer {
 
 namespace decorator {
 #include "problem/decorator.h"
-//#include "solution/decorator.h"
+#include "solution/decorator.h"
 }
 
 namespace chainOfResponsibility {
@@ -89,7 +89,7 @@ int main(int argc, char* args[]) {
     case 6:
       homework::decorator::legacy::demo(dp);
       homework::decorator::problem::demo(dp);
-      //homework::decorator::solution::demo(dp);
+      homework::decorator::solution::demo(dp);
       break;
     case 7:
       homework::chainOfResponsibility::legacy::demo();
