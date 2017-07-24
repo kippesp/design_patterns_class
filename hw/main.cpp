@@ -51,7 +51,7 @@ namespace chainOfResponsibility {
 
 namespace bridge {
 #include "problem/bridge.h"
-//#include "solution/bridge.h"
+#include "solution/bridge.h"
 }
 
 namespace abstractFactory {
@@ -109,12 +109,12 @@ int main(int argc, char* args[]) {
     case 8:
       homework::bridge::legacy::demo();
       homework::bridge::problem::demo();
-      // homework::bridge::solution::demo();
+      homework::bridge::solution::demo();
       break;
     case 9:
       homework::abstractFactory::legacy::demo();
       homework::abstractFactory::problem::demo();
-      // homework::bridge::solution::demo();
+      homework::bridge::solution::demo();
       break;
 
     // Seam point - add next design pattern.
