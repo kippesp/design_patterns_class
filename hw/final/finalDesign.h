@@ -8,6 +8,8 @@
 #ifndef FINAL_FINAL_DESIGN_H_
 #define FINAL_FINAL_DESIGN_H_
 
+#include <cassert>
+
 namespace final_design {
 
 const bool on = true;  // Useful macro to turn dtor instrumentation on/off.
@@ -182,6 +184,7 @@ void demo(const string& orderFile) {
   cout << "<<< final design >>>\n";
 
   FILE* orderFilePtr = fopen(orderFile.c_str(), "r");
+  assert(orderFilePtr != NULL);
 
   for (;;) {  // Get and process each order.
     map<string, string> order = getCompleteOrder(orderFilePtr);
