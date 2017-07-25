@@ -56,7 +56,7 @@ namespace bridge {
 
 namespace abstractFactory {
 #include "problem/abstractFactory.h"
-//#include "solution/bridge.h"
+#include "solution/abstractFactory.h"
 }
 
 // Seam point - include next design pattern.
@@ -114,7 +114,7 @@ int main(int argc, char* args[]) {
     case 9:
       homework::abstractFactory::legacy::demo();
       homework::abstractFactory::problem::demo();
-      homework::bridge::solution::demo();
+      homework::abstractFactory::solution::demo();
       break;
 
     // Seam point - add next design pattern.

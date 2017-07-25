@@ -68,9 +68,9 @@ class Herbivore {  // An interface class in the AF DP.
  public:
   virtual void graze() {
   }
-  virtual void mate(Herbivore* other) {
+  virtual void mate(Herbivore*) {
   }
-  virtual void evade(Carnivore* other) {
+  virtual void evade(Carnivore*) {
   }
 };
 class Bison : public Herbivore {
@@ -143,9 +143,9 @@ class Carnivore {  // An interface class in the AF DP.
   }
 
  public:
-  virtual void eat(Herbivore* other) {
+  virtual void eat(Herbivore*) {
   }
-  virtual void mate(Carnivore* other) {
+  virtual void mate(Carnivore*) {
   }
   virtual void hunt() {
   }
