@@ -129,7 +129,7 @@ namespace template_method {  // DP 3.
 // Seam point - convert a constant step into a polymorphic step.
 }
 
-void process(map<string, string>& order) {
+void process(map<string, string>& /* order */) {
   // Fill in the namespaces above with your design pattern class hierarchies.
   // Call your order processing class from here <myProcess>->run(order);
 }
@@ -140,10 +140,10 @@ pair<string, string> parse(string line) {
 
   sscanf(line.c_str(), "%s", key);
 
-  char* equalSign = strchr(line.c_str(), '=');
+  const char* equalSign = strchr(line.c_str(), '=');
   string value = "";
   if (equalSign) {  // tags = sam i am
-    char* nextToken = equalSign += 2;
+    const char* nextToken = equalSign += 2;
     while (nextToken) {
       sscanf(nextToken, "%s", val);
       value += val;

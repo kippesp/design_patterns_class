@@ -54,9 +54,18 @@ namespace bridge {
 #include "solution/bridge.h"
 }
 
-namespace abstractFactory {
+namespace bridge {
+#include "problem/bridge.h"
+#include "solution/bridge.h"
+}
+
+namespace abstractFactory  {
 #include "problem/abstractFactory.h"
 #include "solution/abstractFactory.h"
+}
+
+namespace final_project  {
+#include "final/finalDesign.h"
 }
 
 // Seam point - include next design pattern.
@@ -115,6 +124,9 @@ int main(int argc, char* args[]) {
       homework::abstractFactory::legacy::demo();
       homework::abstractFactory::problem::demo();
       homework::abstractFactory::solution::demo();
+      break;
+    case 10:
+      homework::final_project::final_design::demo("final/original_design/orders_1.input");
       break;
 
     // Seam point - add next design pattern.
