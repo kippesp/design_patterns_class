@@ -1,0 +1,141 @@
+<< Original Specs >>
+
+1. Plastics:
+  ABS (default)
+  Poly
+    Polypropylene
+    Polyethelene
+  PET
+
+2. Order sizes: (default: 100)
+  10,000
+  20,000
+  50,000
+  
+11. Shapes: (default: duck)
+  duck (35 cc) - [Mill steps: D3C2D2G4]
+  car (40 cc) - [Mill steps: D2C8D1G3]
+  hero (50 cc) - [Mill steps: D1C1D1G7]
+
+18. Colors: (no default)
+  black
+  brown
+  red
+  orange
+  yellow
+  green
+  
+19. Simulate mixing plastic, color, and additives with volume recipe & total (account for multiple cavities):
+	Load plastic bin with <plastic> and color bin with <color>.
+	  Recipe: <plastic>(<vol>) <color>(<vol>) <additive1>(<vol>)... = <shape vol> cc.
+	  Volume: <shape>(<shape vol>) * <cavities> cavitie(s) = <total vol> cc.
+
+20. Injection cycles: (domain: plastics)
+  ABS - Close - mix - heat to 440 - inject at 125 PSI - cool to 360 - separate - progressive eject
+  Poly - Close - mix - heat to 350 - inject at 90 PSI - cool to 290 - separate - smooth eject
+  PET - Close - mix - heat to 404 - inject at 110 PSI - cool to 340 - separate - smooth eject
+
+22. Run time estimates (hours): (domain: size) (Dependencies: cavities, legacy, metal, volume, plastics)
+  BackOfTheEnvelope(orderSize<=10k): runTime = orderSize/cavities*(1/60);
+  Calculation(orderSize<=25k):       runTime = orderSize/cavities*legacy_classes::cycleTime_sec(metal, shape->volume)/3600;
+  Historical(orderSize<=50k):
+    cycletime = legacy_classes::cycleTime_sec(metal, shape->volume)
+  	runTime = (legacy_classes::setupAvg_min + (orderSize/cavities)*cycletime/60 + legacy_classes::teardownAvg_min)/60;
+  Default to highest fidelty estimate.
+ 
+12. Mold locations: (domain: order["moldLoc"])
+  Inventory (default)
+  Sister company
+  ...
+  Mill - must be last
+
+14. Finishes:
+  smooth (default)
+  rippled
+  dimpled
+  
+13,15. Milling Ops: (domain: metal, finish)
+  Aluminum - High carbon
+    drill
+    cut
+    high speed grind
+  Steel - finish
+    smooth - High carbon
+    rippled - Carbide
+      high speed drill
+      cross cut
+      layer grind
+    dimpled - Diamond tipped (default)
+      precision drill
+      oiled cooled cut
+      cartoid grind
+
+16. Tags: (domain: order["tags"])
+  Blank (width determined by cavity space & sum of other tags' widths).
+  Model number (2 mm)
+  Country (2 mm)
+  Date (2 mm)
+
+17. Additives: (domain: order[<additives> <vol>])
+  UV inhibiter
+  Anti-bacterial
+  Hydrophilic
+
+4. IJM: (domain: order size)
+  10,000 - IJM_110
+  20,000 - IJM_120
+  50,000 - IJM_210
+
+5-6. Mold metal & cavites: (domain: order size)
+  10,000 - Aluminum(1)
+  20,000 - Aluminum(2)
+  50,000 - Steel(1)
+
+7. Conveyer belts: (domain: cavities)
+  1 - Linear
+  2 - Y-split
+
+8. Parts bins: (domain: order size)
+  10,000 - Cardboard box
+  20,000 - Shell box
+  50,000 - Pallot box
+  Default to largest if size > max.
+
+3. Packagers: (domain: order["packager"])
+  bulk (default - does nothing, i.e., nothing to pause.)
+  shrink wrap
+  hard pack
+
+21,23. Full parts bins:
+  Pause injection line when full
+  Simulate just once during the injection run:
+    IJM should pause
+    Conveyer belt should pause
+    Packager should pause ... (unless Bulk Packager)
+
+24. Cleaning the molds: (domains: plastic, metal)
+  ABS - soak in alcohol, rinse with water, dry
+  	use legacy method clean()
+  Poly - rinse with acetone, dry
+  	use legacy method prepForReuse()
+  PET
+    Aluminum - rinse with soap and water, dry
+      use legacy method purify()
+    Steel - carbonize (heat to 895 C)
+      use legacy method carbonize()
+
+9-10. Setup the injection run: (domains: order size, Packager)
+  Setup the injection line:
+    IJM
+    Mold(cavities)
+    Conveyer belt
+    Packager
+    Parts bin
+  Get and install the mold
+  Insert tags into mold
+  Load plastic and color bins
+  Load additive bins (if any)
+  Compute estimated run time
+  Run the injection cycle till done
+  Simulate a full bin
+  Clean the mold
