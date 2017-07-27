@@ -21,8 +21,10 @@ const bool on = true; // Useful macro to turn dtor instrumentation on/off.
     cout << x;                                                                 \
   }
 
+/////////////////////////////////////////////////////////////////////////////
+// Can't change these.
 namespace legacy_classes
-{ // Can't change these.
+{
 
 int cycleTime_sec(string metal, int volume_cc)
 {
@@ -45,6 +47,7 @@ class CleanABS
 {
 public:
   ~CleanABS() { DTORF("~legacy_classes::CleanABS "); }
+
   void clean()
   {
     cout << "    Clean ABS mold: soak in alcohol, rinse with water, dry.\n";
@@ -55,6 +58,7 @@ class CleanPolys
 {
 public:
   ~CleanPolys() { DTORF("~legacy_classes::CleanPolys "); }
+
   void prepForReuse()
   {
     cout << "    Clean Poly mold: rinse with acetone, dry.\n";
@@ -65,12 +69,16 @@ class PETCleanup
 {
 public:
   ~PETCleanup() { DTORF("~legacy_classes::PETCleanup "); }
+
+  // Use only on stainless steel.
   void carbonize()
-  { // Use only on stainless steel.
+  {
     cout << "    Clean PET steel mold: heat to 895 C.\n";
   }
+
+  // Use only on aluminum.
   void purify()
-  { // Use only on aluminum.
+  {
     cout << "    Clean PET aluminum mold: rinse with soap and water, dry.\n";
   }
 };
@@ -85,26 +93,30 @@ void defaulting(map<string, string>& order, const string& option,
 }
 }
 
+// DP 2.
 namespace adapter
-{ // DP 2.
+{
 
 // Seam point - add another interface.
 }
 
+// DP 1.
 namespace strategy
-{ // DP 1.
+{
 
 // Seam point - add another algorithm.
 }
 
+// DP 5.
 namespace observer
-{ // DP 5.
+{
 
 // Seam point - add another listener.
 }
 
+// DP 9.
 namespace abstract_factory
-{ // DP 9.
+{
 
 // Seam point - add another type 1.
 // Seam point - add another type 2.
@@ -114,33 +126,38 @@ namespace abstract_factory
 // Seam point - add another family.
 }
 
+// DP 8.
 namespace bridge
-{ // DP 8.
+{
 
 // Seam Point - add another implementation.
 // Seam Point - add another abstraction.
 }
 
+// DP 7.
 namespace chain_of_resp
-{ // DP 7.
+{
 
 // Seam points - add another responder.
 }
 
+// DP 6.
 namespace decorator
-{ // DP 6.
+{
 
 // Seam point - add another option.
 }
 
+// DP 4.
 namespace factory_method
-{ // DP 4.
+{
 
 // Seam point - add another class.
 }
 
+// DP 3.
 namespace template_method
-{ // DP 3.
+{
 
 // Seam point - add another polymorphic step.
 // Seam point - add another constant step.
