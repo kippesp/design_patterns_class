@@ -29,44 +29,102 @@
 
 namespace legacy {
 
-class Lieutenant {
- public:
-  Lieutenant() {
-  }
-  ~Lieutenant() {
-    DTOR("  ~Lieutenant\n", Homework);
-  }
+struct Approver {
+ protected:
+  Approver* successor;
 
  public:
+  Approver() {
+    cout << "  +Approver\n";
+  }
+
+  ~Approver() {
+    DTOR("  ~Approver\n", Homework);
+  }
+
+  static Approver* makeObject(const string& criteria);
+  void setSuccessor(Approver* approver) {
+    successor = approver;
+  }
+};
+
+struct Lieutenant : Approver {
+  Lieutenant() {
+    cout << "  +Lieutenant\n";
+  }
+  ~Lieutenant() {
+    DTOR("  ~Lieutenant", Homework);
+  }
+
   void makeDecision(int livesAtRisk) {
     cout << "  Lieutenant charges " << livesAtRisk << ".\n";
   }
 };
 
-class Captain {
- public:
+struct Captain : Approver {
   Captain() {
+    cout << "  +Captain\n";
   }
   ~Captain() {
-    DTOR("  ~Captain\n", Homework);
+    DTOR("  ~Captain", Homework);
   }
 
- public:
   void makeDecision(int livesAtRisk) {
     cout << "  Captain retreats " << livesAtRisk << ".\n";
   }
 };
-
-Lieutenant lieutenant;
-Captain captain;
 // Seam point - insert another officer class.
+
+Approver* setupChain() {
+  string chain[] = {"lieutenant", "captain"};
+
+  Approver* responder = Approver::makeObject(chain[0]);
+
+  Approver* current = responder;
+
+  for (size_t i = 1; i < COUNT(chain); i++) {
+    Approver* next = Approver::makeObject(chain[i]);
+    current->setSuccessor(next);
+    current = next;
+  }
+
+  current->setSuccessor(new Approver);
+
+  return responder;
+}
+
+Approver* Approver::makeObject(const string& criteria) {
+  if (criteria == "lieutenant")
+    return new Lieutenant;
+  else if (criteria == "captain")
+    return new Captain;
+  // Seam point - add another Officer.
+  else
+    throw "oops";
+}
+
+// Seam point - add another officer class.
+
+Lieutenant* lieutenant = 0;
+Captain* captain = 0;
+
+void setup() {
+  lieutenant = new Lieutenant;
+  captain = new Captain;
+  // Seam point - insert another officer.
+}
+
+void teardown() {
+  delete lieutenant;
+  delete captain;
+  // Seam point - insert another officer.
+}
 
 void clientCode(int livesAtRisk) {
   if (livesAtRisk < 10)
-    lieutenant.makeDecision(livesAtRisk);
+    lieutenant->makeDecision(livesAtRisk);
   else if (livesAtRisk < 20)
-    captain.makeDecision(livesAtRisk);
-  // Seam point - insert another decision level.
+    captain->makeDecision(livesAtRisk);
   else
     cout << "  Indecision " << livesAtRisk << ".\n";
 }
@@ -77,8 +135,8 @@ void demo() {
     clientCode(data[i]);
   }
 
-  lieutenant.~Lieutenant();
-  captain.~Captain();
+  teardown();
+
   cout << endl;
 }
 
