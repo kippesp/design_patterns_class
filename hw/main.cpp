@@ -126,7 +126,8 @@ int main(int argc, char* args[]) {
       homework::abstractFactory::solution::demo();
       break;
     case 10:
-      homework::final_project::final_design::demo("final/original_design/orders_1.input");
+      //homework::final_project::final_design::demo("final/original_design/orders_1.input");
+      homework::final_project::final_design::demo("../final/original_design/orders_1.input");
       break;
 
     // Seam point - add next design pattern.
