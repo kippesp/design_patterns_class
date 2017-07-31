@@ -279,7 +279,7 @@ Car* OptionsDecorator::makeObject(Car* car, string& criteria) {
   // Seam point - add another set of options.
   else
     return car;
-};
+}
 
 void demo(int /* seqNo */) {
   Car* mine = new BasicCar("RunAbout");

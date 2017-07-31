@@ -10,6 +10,7 @@
 #define FINAL_FINAL_DESIGN_H_
 
 #include <cassert>
+#include <cstring>
 
 namespace final_design
 {
@@ -227,7 +228,6 @@ void demo(const string& orderFile)
   cout << "<<< final design >>>\n";
 
   FILE* orderFilePtr = fopen(orderFile.c_str(), "r");
-  assert(orderFilePtr != NULL);
 
   for (;;)
   { // Get and process each order.
