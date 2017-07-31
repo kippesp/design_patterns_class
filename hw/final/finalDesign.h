@@ -14,7 +14,7 @@
 namespace final_design
 {
 
-const bool on = true; // Useful macro to turn dtor instrumentation on/off.
+const bool on = true && DTORF_ENABLE; // Useful macro to turn dtor instrumentation on/off.
 #define DTORF(x)                                                               \
   if (on)                                                                      \
   {                                                                            \
