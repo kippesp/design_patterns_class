@@ -25,21 +25,57 @@ void capture_off()
   cout.rdbuf(sbuf);
 }
 
+map<string, string> getCompleteOrder(const char* lines[])
+{
+  map<string, string> order;
+  pair<string, string> keyValue;
+
+  const char* line = lines[0];
+
+  while (line != NULL)
+  {
+    if (strstr(line, "endOfOrder"))
+    {
+      return (order);
+    }
+    else
+    {
+      keyValue = final_design::parse(line);
+      string key = keyValue.first;
+      if (strchr(key.c_str(), ':')) // Skip left justified order number.
+      {
+        line++;
+        continue;
+      }
+      string value = keyValue.second;
+      order[key] = value;
+    }
+
+    line++;
+  }
+
+  return order;
+}
+
 TEST_CASE("This is a test", "something")
 {
 
-  final_design::legacy_classes::CleanABS c;
-  final_design::legacy_classes::CleanPolys d;
+const char* order_2[] = {
+    "	orderNum	= 2",
+    "	comment		= Example order - one of everything.",
+    "	size		= 10000",
+    "	mold		= duck",
+    "	color		= red",
+    "	plastic		= ABS",
+    "	moldLoc		= inventory",
+    "	tags		= ModelNumber",
+    "	UVInhibiter	= 2",
+    "	packager	= Bulk",
+    "	endOfOrder",
+    };
 
-  capture_on();
-  c.clean();
-  REQUIRE(captured_stdout.str() ==
-          "    Clean ABS mold: soak in alcohol, rinse with water, dry.\n");
-  capture_off();
+  map<string, string> o = getCompleteOrder(order_2);
 
-  capture_on();
-  d.prepForReuse();
-  REQUIRE(captured_stdout.str() ==
-          "    Clean Poly mold: rinse with acetone, dry.\n");
-  capture_off();
+  REQUIRE(o["moldLoc"] == "mill");
+
 }
