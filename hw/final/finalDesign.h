@@ -103,21 +103,32 @@ struct Order
     PLASTIC_ABS,
     PLASTIC_POLYPROPYLENE,
     PLASTIC_POLYETHELENE,
-    PLASTIC_PET
+    PLASTIC_PET,
   } plastic_m;
   uint32_t size_m;
   enum
   {
     PACKAGER_BULK,
     PACKAGER_SHRINK_WRAP,
-    PACKAGER_HARD_PACK
+    PACKAGER_HARD_PACK,
   } packager_m;
+  enum
+  {
+    COLOR_NONE,
+    COLOR_BLACK,
+    COLOR_BROWN,
+    COLOR_RED,
+    COLOR_ORANGE,
+    COLOR_YELLOW,
+    COLOR_GREEN,
+  } color_m;
 
   Order(const map<string, string>& raw_order)
     : MAX_ORDER_SIZE(50000)
     , plastic_m(PLASTIC_ABS)
     , size_m(0)
     , packager_m(PACKAGER_BULK)
+    , color_m(COLOR_NONE)
   {
     auto plastic = raw_order.find("plastic");
 
@@ -201,6 +212,44 @@ struct Order
       map<string, string> order_copy = raw_order;
       legacy_classes::defaulting(order_copy, "packager", "None");
       packager_m = PACKAGER_BULK;
+    }
+
+    auto color = raw_order.find("color");
+
+    if (color == raw_order.end())
+    {
+      map<string, string> order_copy = raw_order;
+      color_m = COLOR_NONE;
+    }
+    else if (color->second == "black")
+    {
+      color_m = COLOR_BLACK;
+    }
+    else if (color->second == "brown")
+    {
+      color_m = COLOR_BROWN;
+    }
+    else if (color->second == "red")
+    {
+      color_m = COLOR_RED;
+    }
+    else if (color->second == "orange")
+    {
+      color_m = COLOR_ORANGE;
+    }
+    else if (color->second == "yellow")
+    {
+      color_m = COLOR_YELLOW;
+    }
+    else if (color->second == "green")
+    {
+      color_m = COLOR_GREEN;
+    }
+    else
+    {
+      map<string, string> order_copy = raw_order;
+      legacy_classes::defaulting(order_copy, "color", "");
+      color_m = COLOR_NONE;
     }
   }
 
