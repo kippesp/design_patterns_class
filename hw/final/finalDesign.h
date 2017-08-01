@@ -99,6 +99,13 @@ struct Order
 {
   uint32_t size_m;
   const uint32_t MAX_ORDER_SIZE;
+  enum
+  {
+    PLASTIC_ABS,
+    PLASTIC_POLYPROPYLENE,
+    PLASTIC_POLYETHELENE,
+    PLASTIC_PET
+  } plastic_m;
 
   Order(const map<string, string>& raw_order)
     : size_m(0)
@@ -108,7 +115,7 @@ struct Order
 
     if (size == raw_order.end())
     {
-      cout << "  <>No size specified, defaulting to 100.";
+      cout << "  <>No size specified, defaulting to 100.\n";
       size_m = 100;
     }
     else
@@ -119,15 +126,46 @@ struct Order
     if (size_m > MAX_ORDER_SIZE)
     {
       cout << "  <>Size exceeds mold lifetime |" << size_m
-           << "| defaulting to MediumOrder of " << MAX_ORDER_SIZE << ".";
+           << "| defaulting to MediumOrder of " << MAX_ORDER_SIZE << ".\n";
 
       size_m = MAX_ORDER_SIZE;
     }
 
     if (size_m == 0)
     {
-      cout << "  <>No size specified, defaulting to 100.";
+      cout << "  <>No size specified, defaulting to 100.\n";
       size_m = 100;
+    }
+
+    auto plastic = raw_order.find("plastic");
+
+    if (plastic == raw_order.end())
+    {
+      map<string, string> order_copy = raw_order;
+      legacy_classes::defaulting(order_copy, "plastic", "ABS");
+      plastic_m = PLASTIC_ABS;
+    }
+    else if (plastic->second == "ABS")
+    {
+      plastic_m = PLASTIC_ABS;
+    }
+    else if (plastic->second == "Polypropylene")
+    {
+      plastic_m = PLASTIC_POLYPROPYLENE;
+    }
+    else if (plastic->second == "Polyethelene")
+    {
+      plastic_m = PLASTIC_POLYETHELENE;
+    }
+    else if (plastic->second == "PET")
+    {
+      plastic_m = PLASTIC_PET;
+    }
+    else
+    {
+      map<string, string> order_copy = raw_order;
+      legacy_classes::defaulting(order_copy, "plastic", "ABS");
+      plastic_m = PLASTIC_ABS;
     }
   }
 

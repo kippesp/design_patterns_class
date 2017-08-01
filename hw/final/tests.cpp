@@ -75,7 +75,11 @@ TEST_CASE("Order defaults", "[orders]")
 
   map<string, string> raw_order = getCompleteOrder(order_no_size);
 
-  SECTION("Default size")
+  ////////////////////////////////////////////////////////////////////////////
+  // ORDER SIZE (2)
+  ////////////////////////////////////////////////////////////////////////////
+
+  SECTION("Size not specified - default 100")
   {
     raw_order.erase("size");
 
@@ -84,7 +88,7 @@ TEST_CASE("Order defaults", "[orders]")
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
-            "  <>No size specified, defaulting to 100.");
+            "  <>No size specified, defaulting to 100.\n");
     REQUIRE(order.size_m == 100);
   }
 
@@ -107,7 +111,7 @@ TEST_CASE("Order defaults", "[orders]")
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
-            "  <>No size specified, defaulting to 100.");
+            "  <>No size specified, defaulting to 100.\n");
     REQUIRE(order.size_m == 100);
   }
 
@@ -132,7 +136,85 @@ TEST_CASE("Order defaults", "[orders]")
     capture_off();
 
     REQUIRE(captured_stdout.str() == "  <>Size exceeds mold lifetime |100001| "
-                                     "defaulting to MediumOrder of 50000.");
+                                     "defaulting to MediumOrder of 50000.\n");
     REQUIRE(order.size_m == 50000);
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // ORDER PLASTIC (1)
+  ////////////////////////////////////////////////////////////////////////////
+
+  SECTION("Plastic not specified - default ABS")
+  {
+    raw_order.erase("plastic");
+
+    capture_on();
+    auto order = final_design::Order(raw_order);
+    capture_off();
+
+    REQUIRE(captured_stdout.str() ==
+            "  <>Unknown plastic || defaulting to 'ABS'.\n");
+    REQUIRE(order.plastic_m == final_design::Order::PLASTIC_ABS);
+  }
+
+  SECTION("Plastic: bogus (unknown)")
+  {
+    raw_order["plastic"] = "bogus";
+
+    capture_on();
+    auto order = final_design::Order(raw_order);
+    capture_off();
+
+    REQUIRE(captured_stdout.str() ==
+            "  <>Unknown plastic |bogus| defaulting to 'ABS'.\n");
+    REQUIRE(order.plastic_m == final_design::Order::PLASTIC_ABS);
+  }
+
+  SECTION("Plastic: ABS")
+  {
+    raw_order["plastic"] = "ABS";
+
+    capture_on();
+    auto order = final_design::Order(raw_order);
+    capture_off();
+
+    REQUIRE(captured_stdout.str() == "");
+    REQUIRE(order.plastic_m == final_design::Order::PLASTIC_ABS);
+  }
+
+  SECTION("Plastic: Polypropylene")
+  {
+    raw_order["plastic"] = "Polypropylene";
+
+    capture_on();
+    auto order = final_design::Order(raw_order);
+    capture_off();
+
+    REQUIRE(captured_stdout.str() == "");
+    REQUIRE(order.plastic_m == final_design::Order::PLASTIC_POLYPROPYLENE);
+  }
+
+  SECTION("Plastic: Polyethelene")
+  {
+    raw_order["plastic"] = "Polyethelene";
+
+    capture_on();
+    auto order = final_design::Order(raw_order);
+    capture_off();
+
+    REQUIRE(captured_stdout.str() == "");
+    REQUIRE(order.plastic_m == final_design::Order::PLASTIC_POLYETHELENE);
+  }
+
+  SECTION("Plastic: PET")
+  {
+    raw_order["plastic"] = "PET";
+
+    capture_on();
+    auto order = final_design::Order(raw_order);
+    capture_off();
+
+    REQUIRE(captured_stdout.str() == "");
+    REQUIRE(order.plastic_m == final_design::Order::PLASTIC_PET);
   }
 }
