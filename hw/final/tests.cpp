@@ -62,6 +62,7 @@ TEST_CASE("Order defaults", "[orders]")
   const char* order_no_size[] = {
     "	orderNum	= 2",
     "	comment		= Example order - one of everything.",
+    "	size		= 10000",
     "	mold		= duck",
     "	color		= red",
     "	plastic		= ABS",
@@ -72,12 +73,66 @@ TEST_CASE("Order defaults", "[orders]")
     "	endOfOrder",
   };
 
-  map<string, string> o = getCompleteOrder(order_no_size);
+  map<string, string> raw_order = getCompleteOrder(order_no_size);
 
-  capture_on();
-  auto order = final_design::Order(o);
-  capture_off();
+  SECTION("Default size")
+  {
+    raw_order.erase("size");
 
-  REQUIRE(captured_stdout.str() == "<>No size specified, defaulting to 100.");
-  REQUIRE(order.size_m == 100);
+    capture_on();
+    auto order = final_design::Order(raw_order);
+    capture_off();
+
+    REQUIRE(captured_stdout.str() ==
+            "  <>No size specified, defaulting to 100.");
+    REQUIRE(order.size_m == 100);
+  }
+
+  SECTION("Order size <= 50000")
+  {
+    capture_on();
+    auto order = final_design::Order(raw_order);
+    capture_off();
+
+    REQUIRE(captured_stdout.str() == "");
+    REQUIRE(order.size_m == 10000);
+  }
+
+  SECTION("Order size == 0")
+  {
+    raw_order["size"] = "0";
+
+    capture_on();
+    auto order = final_design::Order(raw_order);
+    capture_off();
+
+    REQUIRE(captured_stdout.str() ==
+            "  <>No size specified, defaulting to 100.");
+    REQUIRE(order.size_m == 100);
+  }
+
+  SECTION("Order size == 50000 (max)")
+  {
+    raw_order["size"] = "50000";
+
+    capture_on();
+    auto order = final_design::Order(raw_order);
+    capture_off();
+
+    REQUIRE(captured_stdout.str() == "");
+    REQUIRE(order.size_m == 50000);
+  }
+
+  SECTION("Order size > 50000")
+  {
+    raw_order["size"] = "100001";
+
+    capture_on();
+    auto order = final_design::Order(raw_order);
+    capture_off();
+
+    REQUIRE(captured_stdout.str() == "  <>Size exceeds mold lifetime |100001| "
+                                     "defaulting to MediumOrder of 50000.");
+    REQUIRE(order.size_m == 50000);
+  }
 }

@@ -11,6 +11,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <stdlib.h>
 
 namespace final_design
 {
@@ -97,18 +98,36 @@ void defaulting(map<string, string>& order, const string& option,
 struct Order
 {
   uint32_t size_m;
+  const uint32_t MAX_ORDER_SIZE;
 
-  Order(const map<string, string>& o)
+  Order(const map<string, string>& raw_order)
+    : size_m(0)
+    , MAX_ORDER_SIZE(50000)
   {
-    auto size = o.find("size");
-    if (size == o.end())
+    auto size = raw_order.find("size");
+
+    if (size == raw_order.end())
     {
-      cout << "<>No size specified, defaulting to 100.";
+      cout << "  <>No size specified, defaulting to 100.";
       size_m = 100;
     }
     else
     {
-      cout << "nope";
+      size_m = atoi(size->second.c_str());
+    }
+
+    if (size_m > MAX_ORDER_SIZE)
+    {
+      cout << "  <>Size exceeds mold lifetime |" << size_m
+           << "| defaulting to MediumOrder of " << MAX_ORDER_SIZE << ".";
+
+      size_m = MAX_ORDER_SIZE;
+    }
+
+    if (size_m == 0)
+    {
+      cout << "  <>No size specified, defaulting to 100.";
+      size_m = 100;
     }
   }
 
