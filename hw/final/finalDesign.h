@@ -106,11 +106,18 @@ struct Order
     PLASTIC_PET
   } plastic_m;
   uint32_t size_m;
+  enum
+  {
+    PACKAGER_BULK,
+    PACKAGER_SHRINK_WRAP,
+    PACKAGER_HARD_PACK
+  } packager_m;
 
   Order(const map<string, string>& raw_order)
     : MAX_ORDER_SIZE(50000)
     , plastic_m(PLASTIC_ABS)
     , size_m(0)
+    , packager_m(PACKAGER_BULK)
   {
     auto plastic = raw_order.find("plastic");
 
@@ -167,6 +174,33 @@ struct Order
     {
       cout << "  <>No size specified, defaulting to 100.\n";
       size_m = 100;
+    }
+
+    auto packager = raw_order.find("packager");
+
+    if (packager == raw_order.end())
+    {
+      map<string, string> order_copy = raw_order;
+      legacy_classes::defaulting(order_copy, "packager", "None");
+      packager_m = PACKAGER_BULK;
+    }
+    else if (packager->second == "ShrinkWrap")
+    {
+      packager_m = PACKAGER_SHRINK_WRAP;
+    }
+    else if (packager->second == "HardPack")
+    {
+      packager_m = PACKAGER_HARD_PACK;
+    }
+    else if (packager->second == "Bulk")
+    {
+      packager_m = PACKAGER_BULK;
+    }
+    else
+    {
+      map<string, string> order_copy = raw_order;
+      legacy_classes::defaulting(order_copy, "packager", "None");
+      packager_m = PACKAGER_BULK;
     }
   }
 

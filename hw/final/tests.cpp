@@ -30,17 +30,17 @@ map<string, string> getCompleteOrder(const char* lines[])
   map<string, string> order;
   pair<string, string> keyValue;
 
-  const char* line = lines[0];
+  const char** line = &lines[0];
 
-  while (line != NULL)
+  while (*line != NULL)
   {
-    if (strstr(line, "endOfOrder"))
+    if (strstr(*line, "endOfOrder"))
     {
       return (order);
     }
     else
     {
-      keyValue = final_design::parse(line);
+      keyValue = final_design::parse(*line);
       string key = keyValue.first;
       if (strchr(key.c_str(), ':')) // Skip left justified order number.
       {
@@ -216,5 +216,95 @@ TEST_CASE("Order defaults", "[orders]")
     REQUIRE(captured_stdout.str() == "  <>Size exceeds mold lifetime |100001| "
                                      "defaulting to MediumOrder of 50000.\n");
     REQUIRE(order.size_m == 50000);
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // ORDER PACKAGER (3)
+  ////////////////////////////////////////////////////////////////////////////
+
+  SECTION("Packager not specified - default to Bulk")
+  {
+    raw_order.erase("packager");
+
+    capture_on();
+    auto order = final_design::Order(raw_order);
+    capture_off();
+
+    REQUIRE(captured_stdout.str() ==
+            "  <>Unknown packager || defaulting to 'None'.\n");
+    REQUIRE(order.packager_m == final_design::Order::PACKAGER_BULK);
+  }
+
+  SECTION("Packager: none (bulk)")
+  {
+    raw_order["packager"] = "Bulk";
+
+    capture_on();
+    auto order = final_design::Order(raw_order);
+    capture_off();
+
+    REQUIRE(captured_stdout.str() == "");
+    REQUIRE(order.packager_m == final_design::Order::PACKAGER_BULK);
+  }
+
+  SECTION("Packager: bogus (unknown)")
+  {
+    raw_order["packager"] = "bogus";
+
+    capture_on();
+    auto order = final_design::Order(raw_order);
+    capture_off();
+
+    REQUIRE(captured_stdout.str() ==
+            "  <>Unknown packager |bogus| defaulting to 'None'.\n");
+    REQUIRE(order.packager_m == final_design::Order::PACKAGER_BULK);
+  }
+
+  SECTION("Packager: ShrinkWrap")
+  {
+    raw_order["packager"] = "ShrinkWrap";
+
+    capture_on();
+    auto order = final_design::Order(raw_order);
+    capture_off();
+
+    REQUIRE(captured_stdout.str() == "");
+    REQUIRE(order.packager_m == final_design::Order::PACKAGER_SHRINK_WRAP);
+  }
+
+  SECTION("Packager: HardPack")
+  {
+    raw_order["packager"] = "HardPack";
+
+    capture_on();
+    auto order = final_design::Order(raw_order);
+    capture_off();
+
+    REQUIRE(captured_stdout.str() == "");
+    REQUIRE(order.packager_m == final_design::Order::PACKAGER_HARD_PACK);
+  }
+}
+
+TEST_CASE("Null Order", "[null_orders]")
+{
+  const char* null_order[] = {
+    "	orderNum	= 1",
+    "	comment		= Null order - check default behaviors.",
+    "	endOfOrder",
+  };
+
+  map<string, string> raw_null_order = getCompleteOrder(null_order);
+
+  SECTION("Full output")
+  {
+    capture_on();
+    auto order = final_design::Order(raw_null_order);
+    capture_off();
+
+    REQUIRE(captured_stdout.str() ==
+            "  <>Unknown plastic || defaulting to 'ABS'.\n"
+            "  <>No size specified, defaulting to 100.\n"
+            "  <>Unknown packager || defaulting to 'None'.\n");
+    REQUIRE(order.packager_m == final_design::Order::PACKAGER_BULK);
   }
 }
