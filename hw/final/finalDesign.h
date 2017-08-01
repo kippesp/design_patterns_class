@@ -94,6 +94,28 @@ void defaulting(map<string, string>& order, const string& option,
 }
 }
 
+struct Order
+{
+  uint32_t size_m;
+
+  Order(const map<string, string>& o)
+  {
+    auto size = o.find("size");
+    if (size == o.end())
+    {
+      cout << "<>No size specified, defaulting to 100.";
+      size_m = 100;
+    }
+    else
+    {
+      cout << "nope";
+    }
+  }
+
+private:
+  Order() = delete;
+};
+
 // DP 2.
 namespace adapter
 {

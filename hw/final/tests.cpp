@@ -57,13 +57,11 @@ map<string, string> getCompleteOrder(const char* lines[])
   return order;
 }
 
-TEST_CASE("This is a test", "something")
+TEST_CASE("Order defaults", "[orders]")
 {
-
-const char* order_2[] = {
+  const char* order_no_size[] = {
     "	orderNum	= 2",
     "	comment		= Example order - one of everything.",
-    "	size		= 10000",
     "	mold		= duck",
     "	color		= red",
     "	plastic		= ABS",
@@ -72,10 +70,14 @@ const char* order_2[] = {
     "	UVInhibiter	= 2",
     "	packager	= Bulk",
     "	endOfOrder",
-    };
+  };
 
-  map<string, string> o = getCompleteOrder(order_2);
+  map<string, string> o = getCompleteOrder(order_no_size);
 
-  REQUIRE(o["moldLoc"] == "mill");
+  capture_on();
+  auto order = final_design::Order(o);
+  capture_off();
 
+  REQUIRE(captured_stdout.str() == "<>No size specified, defaulting to 100.");
+  REQUIRE(order.size_m == 100);
 }
