@@ -97,7 +97,6 @@ void defaulting(map<string, string>& order, const string& option,
 
 struct Order
 {
-  uint32_t size_m;
   const uint32_t MAX_ORDER_SIZE;
   enum
   {
@@ -106,37 +105,13 @@ struct Order
     PLASTIC_POLYETHELENE,
     PLASTIC_PET
   } plastic_m;
+  uint32_t size_m;
 
   Order(const map<string, string>& raw_order)
-    : size_m(0)
-    , MAX_ORDER_SIZE(50000)
+    : MAX_ORDER_SIZE(50000)
+    , plastic_m(PLASTIC_ABS)
+    , size_m(0)
   {
-    auto size = raw_order.find("size");
-
-    if (size == raw_order.end())
-    {
-      cout << "  <>No size specified, defaulting to 100.\n";
-      size_m = 100;
-    }
-    else
-    {
-      size_m = atoi(size->second.c_str());
-    }
-
-    if (size_m > MAX_ORDER_SIZE)
-    {
-      cout << "  <>Size exceeds mold lifetime |" << size_m
-           << "| defaulting to MediumOrder of " << MAX_ORDER_SIZE << ".\n";
-
-      size_m = MAX_ORDER_SIZE;
-    }
-
-    if (size_m == 0)
-    {
-      cout << "  <>No size specified, defaulting to 100.\n";
-      size_m = 100;
-    }
-
     auto plastic = raw_order.find("plastic");
 
     if (plastic == raw_order.end())
@@ -166,6 +141,32 @@ struct Order
       map<string, string> order_copy = raw_order;
       legacy_classes::defaulting(order_copy, "plastic", "ABS");
       plastic_m = PLASTIC_ABS;
+    }
+
+    auto size = raw_order.find("size");
+
+    if (size == raw_order.end())
+    {
+      cout << "  <>No size specified, defaulting to 100.\n";
+      size_m = 100;
+    }
+    else
+    {
+      size_m = atoi(size->second.c_str());
+    }
+
+    if (size_m > MAX_ORDER_SIZE)
+    {
+      cout << "  <>Size exceeds mold lifetime |" << size_m
+           << "| defaulting to MediumOrder of " << MAX_ORDER_SIZE << ".\n";
+
+      size_m = MAX_ORDER_SIZE;
+    }
+
+    if (size_m == 0)
+    {
+      cout << "  <>No size specified, defaulting to 100.\n";
+      size_m = 100;
     }
   }
 
