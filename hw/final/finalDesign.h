@@ -313,7 +313,7 @@ namespace factory_method
 {
 
 ////////////////////////////////////////////////////////////////////////////
-// Conveyer Belt Family (7)
+// FM - Conveyer Belt Family (7)
 ////////////////////////////////////////////////////////////////////////////
 
 struct ConveyerBelt
@@ -340,7 +340,7 @@ private:
 
 struct LinearBelt : public ConveyerBelt
 {
-  ~LinearBelt()
+  virtual ~LinearBelt()
   {
     string inst = " ~LinearBelt";
     DTORF(inst);
@@ -354,7 +354,7 @@ struct LinearBelt : public ConveyerBelt
 
 struct YSplitBelt : public ConveyerBelt
 {
-  ~YSplitBelt()
+  virtual ~YSplitBelt()
   {
     string inst = " ~YSplitBelt";
     DTORF(inst);
@@ -383,7 +383,7 @@ ConveyerBelt* ConveyerBelt::makeObject(uint32_t numCavities)
 }
 
 ////////////////////////////////////////////////////////////////////////////
-// Mold Family (5)
+// FM - Mold Family (5)
 ////////////////////////////////////////////////////////////////////////////
 
 struct Mold
@@ -394,60 +394,71 @@ struct Mold
     DTORF(inst);
   }
 
-  const string& name() { return name_m; }
-  const string& legacy_name() { return legacy_name_m; }
+  const string& name() const { return name_m; }
+  const string& legacy_name() const { return legacy_name_m; }
+  uint32_t num_cavities() const { return num_cavities_m; }
 
-  static Mold* makeObject(uint32_t batchSize);
+  static Mold* makeObject(uint32_t batchSize, uint32_t orderSize);
 
 protected:
-  Mold(const string name, const string legacy_name)
+  Mold(const string name, const string legacy_name, uint32_t num_cavities)
     : name_m(name)
     , legacy_name_m(legacy_name)
+    , num_cavities_m(num_cavities)
   {
   }
 
 private:
   string name_m;
   string legacy_name_m;
+  uint32_t num_cavities_m;
 };
 
 struct Aluminum : public Mold
 {
-  ~Aluminum()
+  virtual ~Aluminum()
   {
     string inst = " ~Aluminum";
     DTORF(inst);
   }
 
-  Aluminum()
-    : Mold("Aluminum", "aluminum")
+  Aluminum(uint32_t num_cavities)
+    : Mold("Aluminum", "aluminum", num_cavities)
   {
   }
 };
 
 struct StainlessSteel : public Mold
 {
-  ~StainlessSteel()
+  virtual ~StainlessSteel()
   {
     string inst = " ~Steel";
     DTORF(inst);
   }
 
-  StainlessSteel()
-    : Mold("Steel", "steel")
+  StainlessSteel(uint32_t num_cavities)
+    : Mold("Steel", "steel", num_cavities)
   {
   }
 };
 
-Mold* Mold::makeObject(uint32_t batchSize)
+Mold* Mold::makeObject(uint32_t batchSize, uint32_t orderSize)
 {
+  // batchSize always is <= orderSize since orderSize can not be greater than
+  // 50000.
+  assert(batchSize == orderSize);
+
   if (batchSize <= 10000)
   {
-    return new Aluminum();
+    return new Aluminum(1);
+  }
+  else if (batchSize <= 20000)
+  {
+    return new Aluminum(2);
   }
   else if (batchSize <= 50000)
   {
-    return new StainlessSteel();
+    return new StainlessSteel(1);
   }
   else
   {
@@ -456,7 +467,7 @@ Mold* Mold::makeObject(uint32_t batchSize)
 }
 
 ////////////////////////////////////////////////////////////////////////////
-// OutputBin (8)
+// FM - OutputBin (8)
 ////////////////////////////////////////////////////////////////////////////
 struct OutputBin
 {
@@ -565,9 +576,9 @@ OutputBin* OutputBin::makeObject(uint32_t orderSize)
 namespace template_method
 {
 ////////////////////////////////////////////////////////////////////////////
-// ProcessOrder - Main processing class
+// TM - ProcessOrder - Main processing class
 ////////////////////////////////////////////////////////////////////////////
-
+// TODO - Extract out into just Order
 struct ProcessOrder
 {
   const uint32_t MAX_ORDER_SIZE;
@@ -679,7 +690,6 @@ struct ProcessOrder
 private:
   ProcessOrder() = delete;
 };
-
 
 // Seam point - add another polymorphic step.
 // Seam point - add another constant step.

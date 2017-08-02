@@ -87,34 +87,47 @@ TEST_CASE("Injection Machine setup - mold")
 {
   SECTION("Mold Material (5)")
   {
-    Mold* mold = Mold::makeObject(10000);
+    Mold* mold = Mold::makeObject(10000, 10000);
 
     REQUIRE(mold->name() == "Aluminum");
     REQUIRE(mold->legacy_name() == "aluminum");
+    REQUIRE(mold->num_cavities() == 1);
   }
 
   SECTION("Mold Material (5)")
   {
-    Mold* mold = Mold::makeObject(1);
+    Mold* mold = Mold::makeObject(1, 1);
 
     REQUIRE(mold->name() == "Aluminum");
     REQUIRE(mold->legacy_name() == "aluminum");
+    REQUIRE(mold->num_cavities() == 1);
   }
 
   SECTION("Mold Material (5)")
   {
-    Mold* mold = Mold::makeObject(50000);
+    Mold* mold = Mold::makeObject(50000, 50000);
 
     REQUIRE(mold->name() == "Steel");
     REQUIRE(mold->legacy_name() == "steel");
+    REQUIRE(mold->num_cavities() == 1);
   }
 
   SECTION("Mold Material (5)")
   {
-    Mold* mold = Mold::makeObject(10001);
+    Mold* mold = Mold::makeObject(20000, 20000);
 
-    REQUIRE(mold->name() == "Steel");
-    REQUIRE(mold->legacy_name() == "steel");
+    REQUIRE(mold->name() == "Aluminum");
+    REQUIRE(mold->legacy_name() == "aluminum");
+    REQUIRE(mold->num_cavities() == 2);
+  }
+
+  SECTION("Mold Material (5)")
+  {
+    Mold* mold = Mold::makeObject(10001, 10001);
+
+    REQUIRE(mold->name() == "Aluminum");
+    REQUIRE(mold->legacy_name() == "aluminum");
+    REQUIRE(mold->num_cavities() == 2);
   }
 }
 
