@@ -9,6 +9,8 @@ using namespace std;
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
+using namespace final_design::template_method;
+
 stringstream captured_stdout;
 streambuf* sbuf;
 
@@ -79,7 +81,7 @@ TEST_CASE("Order defaults")
     raw_order.erase("plastic");
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
@@ -93,7 +95,7 @@ TEST_CASE("Order defaults")
     raw_order.erase("size");
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
@@ -106,7 +108,7 @@ TEST_CASE("Order defaults")
     raw_order.erase("packager");
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
@@ -120,11 +122,11 @@ TEST_CASE("Order defaults")
     raw_order.erase("color");
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.color_m == final_design::ProcessOrder::COLOR_NONE);
+    REQUIRE(order.color_m == ProcessOrder::COLOR_NONE);
   }
 }
 
@@ -150,7 +152,7 @@ TEST_CASE("Order input - invalid values")
     raw_order["plastic"] = "bogus";
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
@@ -164,7 +166,7 @@ TEST_CASE("Order input - invalid values")
     raw_order["size"] = "";
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
@@ -177,7 +179,7 @@ TEST_CASE("Order input - invalid values")
     raw_order["size"] = "0";
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
@@ -190,7 +192,7 @@ TEST_CASE("Order input - invalid values")
     raw_order["packager"] = "bogus";
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
@@ -204,12 +206,12 @@ TEST_CASE("Order input - invalid values")
     raw_order["color"] = "bogus";
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
             "  <>Unknown color |bogus| defaulting to ''.\n");
-    REQUIRE(order.color_m == final_design::ProcessOrder::COLOR_NONE);
+    REQUIRE(order.color_m == ProcessOrder::COLOR_NONE);
   }
 }
 
@@ -243,7 +245,7 @@ TEST_CASE("Order field options")
     raw_order["plastic"] = "ABS";
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
@@ -256,7 +258,7 @@ TEST_CASE("Order field options")
     raw_order["plastic"] = "Polypropylene";
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
@@ -269,7 +271,7 @@ TEST_CASE("Order field options")
     raw_order["plastic"] = "Polyethelene";
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
@@ -282,7 +284,7 @@ TEST_CASE("Order field options")
     raw_order["plastic"] = "PET";
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
@@ -297,7 +299,7 @@ TEST_CASE("Order field options")
   SECTION("Order size <= 50000")
   {
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
@@ -309,7 +311,7 @@ TEST_CASE("Order field options")
     raw_order["size"] = "50000";
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
@@ -321,7 +323,7 @@ TEST_CASE("Order field options")
     raw_order["size"] = "100001";
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "  <>Size exceeds mold lifetime |100001| "
@@ -338,7 +340,7 @@ TEST_CASE("Order field options")
     raw_order["packager"] = "Bulk";
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
@@ -351,7 +353,7 @@ TEST_CASE("Order field options")
     raw_order["packager"] = "ShrinkWrap";
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
@@ -364,7 +366,7 @@ TEST_CASE("Order field options")
     raw_order["packager"] = "HardPack";
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
@@ -381,10 +383,10 @@ TEST_CASE("Order field options")
     raw_order["color"] = "black";
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
-    REQUIRE(order.color_m == final_design::ProcessOrder::COLOR_BLACK);
+    REQUIRE(order.color_m == ProcessOrder::COLOR_BLACK);
   }
 
   SECTION("Color: brown")
@@ -392,10 +394,10 @@ TEST_CASE("Order field options")
     raw_order["color"] = "brown";
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
-    REQUIRE(order.color_m == final_design::ProcessOrder::COLOR_BROWN);
+    REQUIRE(order.color_m == ProcessOrder::COLOR_BROWN);
   }
 
   SECTION("Color: red")
@@ -403,10 +405,10 @@ TEST_CASE("Order field options")
     raw_order["color"] = "red";
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
-    REQUIRE(order.color_m == final_design::ProcessOrder::COLOR_RED);
+    REQUIRE(order.color_m == ProcessOrder::COLOR_RED);
   }
 
   SECTION("Color: orange")
@@ -414,10 +416,10 @@ TEST_CASE("Order field options")
     raw_order["color"] = "orange";
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
-    REQUIRE(order.color_m == final_design::ProcessOrder::COLOR_ORANGE);
+    REQUIRE(order.color_m == ProcessOrder::COLOR_ORANGE);
   }
 
   SECTION("Color: yellow")
@@ -425,10 +427,10 @@ TEST_CASE("Order field options")
     raw_order["color"] = "yellow";
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
-    REQUIRE(order.color_m == final_design::ProcessOrder::COLOR_YELLOW);
+    REQUIRE(order.color_m == ProcessOrder::COLOR_YELLOW);
   }
 
   SECTION("Color: green")
@@ -436,10 +438,10 @@ TEST_CASE("Order field options")
     raw_order["color"] = "green";
 
     capture_on();
-    auto order = final_design::ProcessOrder(raw_order);
+    auto order = ProcessOrder(raw_order);
     capture_off();
 
-    REQUIRE(order.color_m == final_design::ProcessOrder::COLOR_GREEN);
+    REQUIRE(order.color_m == ProcessOrder::COLOR_GREEN);
   }
 }
 
@@ -459,7 +461,7 @@ TEST_CASE("Full Orders")
   SECTION("Null order output")
   {
     capture_on();
-    auto order = final_design::ProcessOrder(raw_null_order);
+    auto order = ProcessOrder(raw_null_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==

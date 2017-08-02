@@ -146,6 +146,12 @@ struct Plastic
     PLASTIC_PET,
   } plastic_type_t;
 
+  virtual ~Plastic()
+  {
+    string inst = " ~Plastic\n";
+    DTORF(inst);
+  }
+
   Plastic(const RawOrder& order)
   {
     auto order_copy = order.getLegacyCopy();
@@ -201,6 +207,12 @@ struct Packager
     PACKAGER_HARD_PACK,
   } packager_type_t;
 
+  virtual ~Packager()
+  {
+    string inst = " ~Packager\n";
+    DTORF(inst);
+  }
+
   Packager(const RawOrder& order)
   {
     auto order_copy = order.getLegacyCopy();
@@ -238,110 +250,6 @@ struct Packager
 protected:
   packager_type_t type_m;
   Packager() = delete;
-};
-
-////////////////////////////////////////////////////////////////////////////
-// ProcessOrder - Main processing class
-////////////////////////////////////////////////////////////////////////////
-
-struct ProcessOrder
-{
-  const uint32_t MAX_ORDER_SIZE;
-  Plastic* plasticPtr_m;
-  uint32_t size_m;
-  Packager* packagerPtr_m;
-  enum
-  {
-    COLOR_NONE,
-    COLOR_BLACK,
-    COLOR_BROWN,
-    COLOR_RED,
-    COLOR_ORANGE,
-    COLOR_YELLOW,
-    COLOR_GREEN,
-  } color_m;
-
-  ProcessOrder(const map<string, string>& raw_order)
-    : MAX_ORDER_SIZE(50000)
-    , plasticPtr_m(NULL)
-    , size_m(0)
-    , packagerPtr_m(NULL)
-    , color_m(COLOR_NONE)
-  {
-    RawOrder order(raw_order);
-
-    plasticPtr_m = new Plastic(order);
-
-    // SIZE
-    if (!order.hasField("size"))
-    {
-      cout << "  <>No size specified, defaulting to 100.\n";
-      size_m = 100;
-    }
-    else
-    {
-      auto sizeStr = order.getValue("size");
-
-      size_m = atoi(sizeStr.c_str());
-    }
-
-    if (size_m > MAX_ORDER_SIZE)
-    {
-      cout << "  <>Size exceeds mold lifetime |" << size_m
-           << "| defaulting to MediumOrder of " << MAX_ORDER_SIZE << ".\n";
-
-      size_m = MAX_ORDER_SIZE;
-    }
-
-    if (size_m == 0)
-    {
-      cout << "  <>No size specified, defaulting to 100.\n";
-      size_m = 100;
-    }
-
-    packagerPtr_m = new Packager(order);
-
-    auto color = raw_order.find("color");
-
-    if (color == raw_order.end())
-    {
-      map<string, string> order_copy = raw_order;
-      color_m = COLOR_NONE;
-    }
-    else if (color->second == "black")
-    {
-      color_m = COLOR_BLACK;
-    }
-    else if (color->second == "brown")
-    {
-      color_m = COLOR_BROWN;
-    }
-    else if (color->second == "red")
-    {
-      color_m = COLOR_RED;
-    }
-    else if (color->second == "orange")
-    {
-      color_m = COLOR_ORANGE;
-    }
-    else if (color->second == "yellow")
-    {
-      color_m = COLOR_YELLOW;
-    }
-    else if (color->second == "green")
-    {
-      color_m = COLOR_GREEN;
-    }
-    else
-    {
-      map<string, string> order_copy = raw_order;
-      legacy_classes::defaulting(order_copy, "color", "");
-      color_m = COLOR_NONE;
-    }
-  }
-
-private:
-  ProcessOrder() = delete;
 };
 
 // DP 2.
@@ -409,16 +317,135 @@ namespace factory_method
 // DP 3.
 namespace template_method
 {
+////////////////////////////////////////////////////////////////////////////
+// ProcessOrder - Main processing class
+////////////////////////////////////////////////////////////////////////////
+
+struct ProcessOrder
+{
+  const uint32_t MAX_ORDER_SIZE;
+  Plastic* plasticPtr_m;
+  uint32_t size_m;
+  Packager* packagerPtr_m;
+  enum
+  {
+    COLOR_NONE,
+    COLOR_BLACK,
+    COLOR_BROWN,
+    COLOR_RED,
+    COLOR_ORANGE,
+    COLOR_YELLOW,
+    COLOR_GREEN,
+  } color_m;
+
+  virtual ~ProcessOrder()
+  {
+    delete packagerPtr_m;
+    delete plasticPtr_m;
+
+    string inst = " ~ProcessOrder\n";
+    DTORF(inst);
+  }
+
+  ProcessOrder(const map<string, string>& raw_order)
+    : MAX_ORDER_SIZE(50000)
+    , plasticPtr_m(NULL)
+    , size_m(0)
+    , packagerPtr_m(NULL)
+    , color_m(COLOR_NONE)
+  {
+    RawOrder order(raw_order);
+
+    // PLASTIC
+    plasticPtr_m = new Plastic(order);
+
+    // SIZE
+    if (!order.hasField("size"))
+    {
+      cout << "  <>No size specified, defaulting to 100.\n";
+      size_m = 100;
+    }
+    else
+    {
+      auto sizeStr = order.getValue("size");
+
+      size_m = atoi(sizeStr.c_str());
+    }
+
+    if (size_m > MAX_ORDER_SIZE)
+    {
+      cout << "  <>Size exceeds mold lifetime |" << size_m
+           << "| defaulting to MediumOrder of " << MAX_ORDER_SIZE << ".\n";
+
+      size_m = MAX_ORDER_SIZE;
+    }
+
+    if (size_m == 0)
+    {
+      cout << "  <>No size specified, defaulting to 100.\n";
+      size_m = 100;
+    }
+
+    // PACKAGER
+    packagerPtr_m = new Packager(order);
+
+    // COLOR
+    auto color = raw_order.find("color");
+
+    if (color == raw_order.end())
+    {
+      map<string, string> order_copy = raw_order;
+      color_m = COLOR_NONE;
+    }
+    else if (color->second == "black")
+    {
+      color_m = COLOR_BLACK;
+    }
+    else if (color->second == "brown")
+    {
+      color_m = COLOR_BROWN;
+    }
+    else if (color->second == "red")
+    {
+      color_m = COLOR_RED;
+    }
+    else if (color->second == "orange")
+    {
+      color_m = COLOR_ORANGE;
+    }
+    else if (color->second == "yellow")
+    {
+      color_m = COLOR_YELLOW;
+    }
+    else if (color->second == "green")
+    {
+      color_m = COLOR_GREEN;
+    }
+    else
+    {
+      map<string, string> order_copy = raw_order;
+      legacy_classes::defaulting(order_copy, "color", "");
+      color_m = COLOR_NONE;
+    }
+  }
+
+private:
+  ProcessOrder() = delete;
+};
+
 
 // Seam point - add another polymorphic step.
 // Seam point - add another constant step.
 // Seam point - convert a constant step into a polymorphic step.
 }
 
-void process(map<string, string>& /* order */)
+void process(map<string, string>& order)
 {
   // Fill in the namespaces above with your design pattern class hierarchies.
   // Call your order processing class from here <myProcess>->run(order);
+  auto processOrder = new template_method::ProcessOrder(order);
+
+  delete processOrder;
 }
 
 pair<string, string> parse(string line)
