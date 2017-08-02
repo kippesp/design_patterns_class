@@ -84,7 +84,8 @@ TEST_CASE("Order defaults")
 
     REQUIRE(captured_stdout.str() ==
             "  <>Unknown plastic || defaulting to 'ABS'.\n");
-    REQUIRE(order.plastic_m == final_design::ProcessOrder::PLASTIC_ABS);
+    REQUIRE(order.plasticPtr_m->getPlasticType() ==
+            final_design::Plastic::PLASTIC_ABS);
   }
 
   SECTION("Default size (2) - <100>")
@@ -153,7 +154,8 @@ TEST_CASE("Order input - invalid values")
 
     REQUIRE(captured_stdout.str() ==
             "  <>Unknown plastic |bogus| defaulting to 'ABS'.\n");
-    REQUIRE(order.plastic_m == final_design::ProcessOrder::PLASTIC_ABS);
+    REQUIRE(order.plasticPtr_m->getPlasticType() ==
+            final_design::Plastic::PLASTIC_ABS);
   }
 
   SECTION("size (2) == unknown to <100>")
@@ -243,7 +245,8 @@ TEST_CASE("Order field options")
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.plastic_m == final_design::ProcessOrder::PLASTIC_ABS);
+    REQUIRE(order.plasticPtr_m->getPlasticType() ==
+            final_design::Plastic::PLASTIC_ABS);
   }
 
   SECTION("Plastic: Polypropylene")
@@ -255,7 +258,8 @@ TEST_CASE("Order field options")
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.plastic_m == final_design::ProcessOrder::PLASTIC_POLYPROPYLENE);
+    REQUIRE(order.plasticPtr_m->getPlasticType() ==
+            final_design::Plastic::PLASTIC_POLYPROPYLENE);
   }
 
   SECTION("Plastic: Polyethelene")
@@ -267,7 +271,8 @@ TEST_CASE("Order field options")
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.plastic_m == final_design::ProcessOrder::PLASTIC_POLYETHELENE);
+    REQUIRE(order.plasticPtr_m->getPlasticType() ==
+            final_design::Plastic::PLASTIC_POLYETHELENE);
   }
 
   SECTION("Plastic: PET")
@@ -279,7 +284,8 @@ TEST_CASE("Order field options")
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.plastic_m == final_design::ProcessOrder::PLASTIC_PET);
+    REQUIRE(order.plasticPtr_m->getPlasticType() ==
+            final_design::Plastic::PLASTIC_PET);
   }
 
   ////////////////////////////////////////////////////////////////////////////

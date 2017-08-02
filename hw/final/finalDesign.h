@@ -115,7 +115,7 @@ struct RawOrder
     return (value == raw_order_m.end()) ? false : true;
   }
 
-  const string getfield(const char* field) const
+  const string getField(const char* field) const
   {
     if (hasField(field))
     {
@@ -134,19 +134,69 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////
+// Plastic
+////////////////////////////////////////////////////////////////////////////
+
+struct Plastic
+{
+  typedef enum {
+    PLASTIC_ABS,
+    PLASTIC_POLYPROPYLENE,
+    PLASTIC_POLYETHELENE,
+    PLASTIC_PET,
+  } type_t;
+
+  Plastic(const RawOrder& order)
+  {
+    auto order_copy = order.getLegacyCopy();
+
+    if (!order.hasField("plastic"))
+    {
+      legacy_classes::defaulting(order_copy, "plastic", "ABS");
+      type_m = PLASTIC_ABS;
+      return;
+    }
+
+    auto plastic = order.getField("plastic");
+
+    if (plastic == "ABS")
+    {
+      type_m = PLASTIC_ABS;
+    }
+    else if (plastic == "Polypropylene")
+    {
+      type_m = PLASTIC_POLYPROPYLENE;
+    }
+    else if (plastic == "Polyethelene")
+    {
+      type_m = PLASTIC_POLYETHELENE;
+    }
+    else if (plastic == "PET")
+    {
+      type_m = PLASTIC_PET;
+    }
+    else
+    {
+      legacy_classes::defaulting(order_copy, "plastic", "ABS");
+      type_m = PLASTIC_ABS;
+    }
+  }
+
+  type_t getPlasticType() const { return type_m; }
+
+protected:
+  type_t type_m;
+  Plastic() = delete;
+};
+
+////////////////////////////////////////////////////////////////////////////
 // ProcessOrder - Main processing class
 ////////////////////////////////////////////////////////////////////////////
 
 struct ProcessOrder
 {
   const uint32_t MAX_ORDER_SIZE;
-  enum
-  {
-    PLASTIC_ABS,
-    PLASTIC_POLYPROPYLENE,
-    PLASTIC_POLYETHELENE,
-    PLASTIC_PET,
-  } plastic_m;
+  Plastic* plasticPtr_m;
   uint32_t size_m;
   enum
   {
@@ -167,43 +217,14 @@ struct ProcessOrder
 
   ProcessOrder(const map<string, string>& raw_order)
     : MAX_ORDER_SIZE(50000)
-    , plastic_m(PLASTIC_ABS)
+    , plasticPtr_m(NULL)
     , size_m(0)
     , packager_m(PACKAGER_BULK)
     , color_m(COLOR_NONE)
   {
     RawOrder order(raw_order);
 
-    auto plastic = raw_order.find("plastic");
-
-    if (!order.hasField("plastic"))
-    {
-      auto order_copy = order.getLegacyCopy();
-      legacy_classes::defaulting(order_copy, "plastic", "ABS");
-      plastic_m = PLASTIC_ABS;
-    }
-    else if (plastic->second == "ABS")
-    {
-      plastic_m = PLASTIC_ABS;
-    }
-    else if (plastic->second == "Polypropylene")
-    {
-      plastic_m = PLASTIC_POLYPROPYLENE;
-    }
-    else if (plastic->second == "Polyethelene")
-    {
-      plastic_m = PLASTIC_POLYETHELENE;
-    }
-    else if (plastic->second == "PET")
-    {
-      plastic_m = PLASTIC_PET;
-    }
-    else
-    {
-      map<string, string> order_copy = raw_order;
-      legacy_classes::defaulting(order_copy, "plastic", "ABS");
-      plastic_m = PLASTIC_ABS;
-    }
+    plasticPtr_m = new Plastic(order);
 
     auto size = raw_order.find("size");
 
