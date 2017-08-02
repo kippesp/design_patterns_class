@@ -2,8 +2,8 @@
 /*
  * finalDesign.h
  *
- *  Created on: <MMDDCCYY>
- *      Author: <student name>
+ *  Created on: 08012017
+ *      Author: Paul M. Kippes <paul.m.kippes@intel.com>
  */
 
 #ifndef FINAL_FINAL_DESIGN_H_
@@ -307,9 +307,152 @@ namespace decorator
 // Seam point - add another option.
 }
 
+//##########################################################################
+// Factory Method Patterns
+//##########################################################################
+
 // DP 4.
 namespace factory_method
 {
+
+////////////////////////////////////////////////////////////////////////////
+// Conveyer Belt Family (7)
+////////////////////////////////////////////////////////////////////////////
+
+struct ConveyerBelt
+{
+  virtual ~ConveyerBelt()
+  {
+    string inst = " ~ConveyerBelt\n";
+    DTORF(inst);
+  }
+
+  ConveyerBelt(const string name)
+    : name_m(name)
+  {
+  }
+
+  virtual string name() { return name_m; }
+
+  static ConveyerBelt* makeObject(uint32_t numCavities);
+
+  string name_m;
+};
+
+struct LinearBelt : public ConveyerBelt
+{
+  ~LinearBelt()
+  {
+    string inst = " ~LinearBelt";
+    DTORF(inst);
+  }
+
+  LinearBelt()
+    : ConveyerBelt("Linear conveyer belt")
+  {
+  }
+};
+
+struct YSplitBelt : public ConveyerBelt
+{
+  ~YSplitBelt()
+  {
+    string inst = " ~YSplitBelt";
+    DTORF(inst);
+  }
+
+  YSplitBelt()
+    : ConveyerBelt("Y-Split conveyer belt")
+  {
+  }
+};
+
+ConveyerBelt* ConveyerBelt::makeObject(uint32_t numCavities)
+{
+  if (numCavities == 1)
+  {
+    return new LinearBelt();
+  }
+  else if (numCavities == 2)
+  {
+    return new YSplitBelt();
+  }
+  else
+  {
+    assert(false);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////
+// Mold Family (5)
+////////////////////////////////////////////////////////////////////////////
+
+struct Mold
+{
+  virtual ~Mold()
+  {
+    string inst = " ~Mold\n";
+    DTORF(inst);
+  }
+
+  Mold(const string name, const string legacy_name)
+    : name_m(name)
+    , legacy_name_m(legacy_name)
+  {
+  }
+
+  virtual string name() { return name_m; }
+  virtual string legacy_name() { return legacy_name_m; }
+
+  static Mold* makeObject(uint32_t batchSize);
+
+  string name_m;
+  string legacy_name_m;
+};
+
+struct Aluminum : public Mold
+{
+  ~Aluminum()
+  {
+    string inst = " ~Aluminum";
+    DTORF(inst);
+  }
+
+  Aluminum()
+    : Mold("Aluminum", "aluminum")
+  {
+  }
+};
+
+struct StainlessSteel : public Mold
+{
+  ~StainlessSteel()
+  {
+    string inst = " ~Steel";
+    DTORF(inst);
+  }
+
+  StainlessSteel()
+    : Mold("Steel", "steel")
+  {
+  }
+};
+
+Mold* Mold::makeObject(uint32_t batchSize)
+{
+  if (batchSize <= 10000)
+  {
+    return new Aluminum();
+  }
+  else if (batchSize <= 50000)
+  {
+    return new StainlessSteel();
+  }
+  else
+  {
+    assert(false);
+  }
+}
 
 // Seam point - add another class.
 }

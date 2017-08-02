@@ -10,6 +10,7 @@ using namespace std;
 #include "catch.hpp"
 
 using namespace final_design::template_method;
+using namespace final_design::factory_method;
 
 stringstream captured_stdout;
 streambuf* sbuf;
@@ -57,6 +58,63 @@ map<string, string> getCompleteOrder(const char* lines[])
   }
 
   return order;
+}
+
+//##########################################################################
+// INJECTION MACHINE SETUP - CONVEYER BELT
+//##########################################################################
+TEST_CASE("Injection Machine setup - conveyer belt")
+{
+  SECTION("Conveyer Belt Criteria (7)")
+  {
+    ConveyerBelt* belt = ConveyerBelt::makeObject(1);
+
+    REQUIRE(belt->name() == "Linear conveyer belt");
+  }
+
+  SECTION("Conveyer Belt Criteria (7)")
+  {
+    ConveyerBelt* belt = ConveyerBelt::makeObject(2);
+
+    REQUIRE(belt->name() == "Y-Split conveyer belt");
+  }
+}
+//##########################################################################
+// INJECTION MACHINE SETUP - MOLD MATERIAL
+//##########################################################################
+TEST_CASE("Injection Machine setup - mold")
+{
+  SECTION("Mold Material (5)")
+  {
+    Mold* mold = Mold::makeObject(10000);
+
+    REQUIRE(mold->name() == "Aluminum");
+    REQUIRE(mold->legacy_name() == "aluminum");
+  }
+
+  SECTION("Mold Material (5)")
+  {
+    Mold* mold = Mold::makeObject(1);
+
+    REQUIRE(mold->name() == "Aluminum");
+    REQUIRE(mold->legacy_name() == "aluminum");
+  }
+
+  SECTION("Mold Material (5)")
+  {
+    Mold* mold = Mold::makeObject(50000);
+
+    REQUIRE(mold->name() == "Steel");
+    REQUIRE(mold->legacy_name() == "steel");
+  }
+
+  SECTION("Mold Material (5)")
+  {
+    Mold* mold = Mold::makeObject(10001);
+
+    REQUIRE(mold->name() == "Steel");
+    REQUIRE(mold->legacy_name() == "steel");
+  }
 }
 
 //##########################################################################
