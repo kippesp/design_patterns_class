@@ -79,6 +79,7 @@ TEST_CASE("Injection Machine setup - conveyer belt")
     REQUIRE(belt->name() == "Y-Split conveyer belt");
   }
 }
+
 //##########################################################################
 // INJECTION MACHINE SETUP - MOLD MATERIAL
 //##########################################################################
@@ -114,6 +115,66 @@ TEST_CASE("Injection Machine setup - mold")
 
     REQUIRE(mold->name() == "Steel");
     REQUIRE(mold->legacy_name() == "steel");
+  }
+}
+
+//##########################################################################
+// INJECTION MACHINE SETUP - OUTPUT BIN (8)
+//##########################################################################
+TEST_CASE("Injection Machine setup - output bin")
+{
+  SECTION("Output Bin Criteria (8)")
+  {
+    OutputBin* output_bin = OutputBin::makeObject(10000);
+
+    REQUIRE(output_bin->name() == "CardboardBox");
+    REQUIRE(output_bin->type() == OutputBin::OUTPUT_BIN_CARDBOARD_BOX);
+    REQUIRE(output_bin->capacity() == 10000);
+  }
+
+  SECTION("Output Bin Criteria (8)")
+  {
+    OutputBin* output_bin = OutputBin::makeObject(20000);
+
+    REQUIRE(output_bin->name() == "ShellBox");
+    REQUIRE(output_bin->type() == OutputBin::OUTPUT_BIN_SHELL_BOX);
+    REQUIRE(output_bin->capacity() == 20000);
+  }
+
+  SECTION("Output Bin Criteria (8)")
+  {
+    OutputBin* output_bin = OutputBin::makeObject(50000);
+
+    REQUIRE(output_bin->name() == "PallotBox");
+    REQUIRE(output_bin->type() == OutputBin::OUTPUT_BIN_PALLOT_BOX);
+    REQUIRE(output_bin->capacity() == 50000);
+  }
+
+  SECTION("Output Bin Criteria (8)")
+  {
+    OutputBin* output_bin = OutputBin::makeObject(9999); // one less than max
+
+    REQUIRE(output_bin->name() == "CardboardBox");
+    REQUIRE(output_bin->type() == OutputBin::OUTPUT_BIN_CARDBOARD_BOX);
+    REQUIRE(output_bin->capacity() == 10000);
+  }
+
+  SECTION("Output Bin Criteria (8)")
+  {
+    OutputBin* output_bin = OutputBin::makeObject(19999); // one less than max
+
+    REQUIRE(output_bin->name() == "ShellBox");
+    REQUIRE(output_bin->type() == OutputBin::OUTPUT_BIN_SHELL_BOX);
+    REQUIRE(output_bin->capacity() == 20000);
+  }
+
+  SECTION("Output Bin Criteria (8)")
+  {
+    OutputBin* output_bin = OutputBin::makeObject(49999); // one less than max
+
+    REQUIRE(output_bin->name() == "PallotBox");
+    REQUIRE(output_bin->type() == OutputBin::OUTPUT_BIN_PALLOT_BOX);
+    REQUIRE(output_bin->capacity() == 50000);
   }
 }
 

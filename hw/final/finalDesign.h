@@ -98,7 +98,6 @@ void defaulting(map<string, string>& order, const string& option,
 ////////////////////////////////////////////////////////////////////////////
 // RawOrder - Data structure
 ////////////////////////////////////////////////////////////////////////////
-
 struct RawOrder
 {
   RawOrder(const map<string, string>& raw_order)
@@ -134,9 +133,8 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////
-// Plastic
+// Plastic (1)
 ////////////////////////////////////////////////////////////////////////////
-
 struct Plastic
 {
   typedef enum {
@@ -196,9 +194,8 @@ protected:
 };
 
 ////////////////////////////////////////////////////////////////////////////
-// Packager
+// Packager (3)
 ////////////////////////////////////////////////////////////////////////////
-
 struct Packager
 {
   typedef enum {
@@ -327,15 +324,17 @@ struct ConveyerBelt
     DTORF(inst);
   }
 
+  const string& name() { return name_m; }
+
+  static ConveyerBelt* makeObject(uint32_t numCavities);
+
+protected:
   ConveyerBelt(const string name)
     : name_m(name)
   {
   }
 
-  virtual string name() { return name_m; }
-
-  static ConveyerBelt* makeObject(uint32_t numCavities);
-
+private:
   string name_m;
 };
 
@@ -395,17 +394,19 @@ struct Mold
     DTORF(inst);
   }
 
+  const string& name() { return name_m; }
+  const string& legacy_name() { return legacy_name_m; }
+
+  static Mold* makeObject(uint32_t batchSize);
+
+protected:
   Mold(const string name, const string legacy_name)
     : name_m(name)
     , legacy_name_m(legacy_name)
   {
   }
 
-  virtual string name() { return name_m; }
-  virtual string legacy_name() { return legacy_name_m; }
-
-  static Mold* makeObject(uint32_t batchSize);
-
+private:
   string name_m;
   string legacy_name_m;
 };
@@ -447,6 +448,109 @@ Mold* Mold::makeObject(uint32_t batchSize)
   else if (batchSize <= 50000)
   {
     return new StainlessSteel();
+  }
+  else
+  {
+    assert(false);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////
+// OutputBin (8)
+////////////////////////////////////////////////////////////////////////////
+struct OutputBin
+{
+  typedef enum {
+    OUTPUT_BIN_CARDBOARD_BOX,
+    OUTPUT_BIN_SHELL_BOX,
+    OUTPUT_BIN_PALLOT_BOX,
+  } output_bin_t;
+
+  virtual ~OutputBin()
+  {
+    string inst = " ~OutputBin\n";
+    DTORF(inst);
+  }
+
+  const string& name() const { return name_m; }
+
+  output_bin_t type() const { return type_m; }
+
+  uint32_t capacity() const { return capacity_m; }
+
+  // bool add_num_items(uint32_t num_items_to_add) {}
+
+  static OutputBin* makeObject(uint32_t orderSize);
+
+protected:
+  OutputBin(const string& name, output_bin_t output_bin_type, uint32_t capacity)
+    : name_m(name)
+    , type_m(output_bin_type)
+    , capacity_m(capacity)
+  {
+  }
+
+private:
+  const string name_m;
+  const output_bin_t type_m;
+  const uint32_t capacity_m;
+};
+
+struct CardboardBox : public OutputBin
+{
+  virtual ~CardboardBox()
+  {
+    string inst = " ~CardboardBox";
+    DTORF(inst);
+  }
+
+  CardboardBox()
+    : OutputBin("CardboardBox", OUTPUT_BIN_CARDBOARD_BOX, 10000)
+  {
+  }
+};
+
+struct ShellBox : public OutputBin
+{
+  virtual ~ShellBox()
+  {
+    string inst = " ~ShellBox";
+    DTORF(inst);
+  }
+
+  ShellBox()
+    : OutputBin("ShellBox", OUTPUT_BIN_SHELL_BOX, 20000)
+  {
+  }
+};
+
+struct PallotBox : public OutputBin
+{
+  virtual ~PallotBox()
+  {
+    string inst = " ~PallotBox";
+    DTORF(inst);
+  }
+
+  PallotBox()
+    : OutputBin("PallotBox", OUTPUT_BIN_PALLOT_BOX, 50000)
+  {
+  }
+};
+
+OutputBin* OutputBin::makeObject(uint32_t orderSize)
+{
+  if (orderSize <= 10000)
+  {
+    return new CardboardBox();
+  }
+  else if (orderSize <= 20000)
+  {
+    return new ShellBox();
+  }
+  else if (orderSize <= 50000)
+  {
+    return new PallotBox();
   }
   else
   {
