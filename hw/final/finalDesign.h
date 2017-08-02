@@ -95,7 +95,9 @@ void defaulting(map<string, string>& order, const string& option,
 }
 }
 
-struct Order
+
+
+struct ProcessOrder
 {
   const uint32_t MAX_ORDER_SIZE;
   enum
@@ -123,7 +125,7 @@ struct Order
     COLOR_GREEN,
   } color_m;
 
-  Order(const map<string, string>& raw_order)
+  ProcessOrder(const map<string, string>& raw_order)
     : MAX_ORDER_SIZE(50000)
     , plastic_m(PLASTIC_ABS)
     , size_m(0)
@@ -254,7 +256,7 @@ struct Order
   }
 
 private:
-  Order() = delete;
+  ProcessOrder() = delete;
 };
 
 // DP 2.

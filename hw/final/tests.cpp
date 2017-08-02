@@ -79,12 +79,12 @@ TEST_CASE("Order defaults")
     raw_order.erase("plastic");
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
             "  <>Unknown plastic || defaulting to 'ABS'.\n");
-    REQUIRE(order.plastic_m == final_design::Order::PLASTIC_ABS);
+    REQUIRE(order.plastic_m == final_design::ProcessOrder::PLASTIC_ABS);
   }
 
   SECTION("Default size (2) - <100>")
@@ -92,7 +92,7 @@ TEST_CASE("Order defaults")
     raw_order.erase("size");
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
@@ -105,12 +105,12 @@ TEST_CASE("Order defaults")
     raw_order.erase("packager");
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
             "  <>Unknown packager || defaulting to 'None'.\n");
-    REQUIRE(order.packager_m == final_design::Order::PACKAGER_BULK);
+    REQUIRE(order.packager_m == final_design::ProcessOrder::PACKAGER_BULK);
   }
 
   SECTION("Default color (18) - <>")
@@ -118,11 +118,11 @@ TEST_CASE("Order defaults")
     raw_order.erase("color");
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.color_m == final_design::Order::COLOR_NONE);
+    REQUIRE(order.color_m == final_design::ProcessOrder::COLOR_NONE);
   }
 }
 
@@ -148,12 +148,12 @@ TEST_CASE("Order input - invalid values")
     raw_order["plastic"] = "bogus";
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
             "  <>Unknown plastic |bogus| defaulting to 'ABS'.\n");
-    REQUIRE(order.plastic_m == final_design::Order::PLASTIC_ABS);
+    REQUIRE(order.plastic_m == final_design::ProcessOrder::PLASTIC_ABS);
   }
 
   SECTION("size (2) == unknown to <100>")
@@ -161,7 +161,7 @@ TEST_CASE("Order input - invalid values")
     raw_order["size"] = "";
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
@@ -174,7 +174,7 @@ TEST_CASE("Order input - invalid values")
     raw_order["size"] = "0";
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
@@ -187,12 +187,12 @@ TEST_CASE("Order input - invalid values")
     raw_order["packager"] = "bogus";
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
             "  <>Unknown packager |bogus| defaulting to 'None'.\n");
-    REQUIRE(order.packager_m == final_design::Order::PACKAGER_BULK);
+    REQUIRE(order.packager_m == final_design::ProcessOrder::PACKAGER_BULK);
   }
 
   SECTION("Color (2): unknown to <>")
@@ -200,12 +200,12 @@ TEST_CASE("Order input - invalid values")
     raw_order["color"] = "bogus";
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
             "  <>Unknown color |bogus| defaulting to ''.\n");
-    REQUIRE(order.color_m == final_design::Order::COLOR_NONE);
+    REQUIRE(order.color_m == final_design::ProcessOrder::COLOR_NONE);
   }
 }
 
@@ -239,11 +239,11 @@ TEST_CASE("Order field options")
     raw_order["plastic"] = "ABS";
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.plastic_m == final_design::Order::PLASTIC_ABS);
+    REQUIRE(order.plastic_m == final_design::ProcessOrder::PLASTIC_ABS);
   }
 
   SECTION("Plastic: Polypropylene")
@@ -251,11 +251,11 @@ TEST_CASE("Order field options")
     raw_order["plastic"] = "Polypropylene";
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.plastic_m == final_design::Order::PLASTIC_POLYPROPYLENE);
+    REQUIRE(order.plastic_m == final_design::ProcessOrder::PLASTIC_POLYPROPYLENE);
   }
 
   SECTION("Plastic: Polyethelene")
@@ -263,11 +263,11 @@ TEST_CASE("Order field options")
     raw_order["plastic"] = "Polyethelene";
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.plastic_m == final_design::Order::PLASTIC_POLYETHELENE);
+    REQUIRE(order.plastic_m == final_design::ProcessOrder::PLASTIC_POLYETHELENE);
   }
 
   SECTION("Plastic: PET")
@@ -275,11 +275,11 @@ TEST_CASE("Order field options")
     raw_order["plastic"] = "PET";
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.plastic_m == final_design::Order::PLASTIC_PET);
+    REQUIRE(order.plastic_m == final_design::ProcessOrder::PLASTIC_PET);
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -289,7 +289,7 @@ TEST_CASE("Order field options")
   SECTION("Order size <= 50000")
   {
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
@@ -301,7 +301,7 @@ TEST_CASE("Order field options")
     raw_order["size"] = "50000";
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
@@ -313,7 +313,7 @@ TEST_CASE("Order field options")
     raw_order["size"] = "100001";
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "  <>Size exceeds mold lifetime |100001| "
@@ -330,11 +330,11 @@ TEST_CASE("Order field options")
     raw_order["packager"] = "Bulk";
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.packager_m == final_design::Order::PACKAGER_BULK);
+    REQUIRE(order.packager_m == final_design::ProcessOrder::PACKAGER_BULK);
   }
 
   SECTION("Packager: ShrinkWrap")
@@ -342,11 +342,11 @@ TEST_CASE("Order field options")
     raw_order["packager"] = "ShrinkWrap";
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.packager_m == final_design::Order::PACKAGER_SHRINK_WRAP);
+    REQUIRE(order.packager_m == final_design::ProcessOrder::PACKAGER_SHRINK_WRAP);
   }
 
   SECTION("Packager: HardPack")
@@ -354,11 +354,11 @@ TEST_CASE("Order field options")
     raw_order["packager"] = "HardPack";
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.packager_m == final_design::Order::PACKAGER_HARD_PACK);
+    REQUIRE(order.packager_m == final_design::ProcessOrder::PACKAGER_HARD_PACK);
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -370,10 +370,10 @@ TEST_CASE("Order field options")
     raw_order["color"] = "black";
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
-    REQUIRE(order.color_m == final_design::Order::COLOR_BLACK);
+    REQUIRE(order.color_m == final_design::ProcessOrder::COLOR_BLACK);
   }
 
   SECTION("Color: brown")
@@ -381,10 +381,10 @@ TEST_CASE("Order field options")
     raw_order["color"] = "brown";
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
-    REQUIRE(order.color_m == final_design::Order::COLOR_BROWN);
+    REQUIRE(order.color_m == final_design::ProcessOrder::COLOR_BROWN);
   }
 
   SECTION("Color: red")
@@ -392,10 +392,10 @@ TEST_CASE("Order field options")
     raw_order["color"] = "red";
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
-    REQUIRE(order.color_m == final_design::Order::COLOR_RED);
+    REQUIRE(order.color_m == final_design::ProcessOrder::COLOR_RED);
   }
 
   SECTION("Color: orange")
@@ -403,10 +403,10 @@ TEST_CASE("Order field options")
     raw_order["color"] = "orange";
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
-    REQUIRE(order.color_m == final_design::Order::COLOR_ORANGE);
+    REQUIRE(order.color_m == final_design::ProcessOrder::COLOR_ORANGE);
   }
 
   SECTION("Color: yellow")
@@ -414,10 +414,10 @@ TEST_CASE("Order field options")
     raw_order["color"] = "yellow";
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
-    REQUIRE(order.color_m == final_design::Order::COLOR_YELLOW);
+    REQUIRE(order.color_m == final_design::ProcessOrder::COLOR_YELLOW);
   }
 
   SECTION("Color: green")
@@ -425,10 +425,10 @@ TEST_CASE("Order field options")
     raw_order["color"] = "green";
 
     capture_on();
-    auto order = final_design::Order(raw_order);
+    auto order = final_design::ProcessOrder(raw_order);
     capture_off();
 
-    REQUIRE(order.color_m == final_design::Order::COLOR_GREEN);
+    REQUIRE(order.color_m == final_design::ProcessOrder::COLOR_GREEN);
   }
 }
 
@@ -448,13 +448,13 @@ TEST_CASE("Full Orders")
   SECTION("Null order output")
   {
     capture_on();
-    auto order = final_design::Order(raw_null_order);
+    auto order = final_design::ProcessOrder(raw_null_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
             "  <>Unknown plastic || defaulting to 'ABS'.\n"
             "  <>No size specified, defaulting to 100.\n"
             "  <>Unknown packager || defaulting to 'None'.\n");
-    REQUIRE(order.packager_m == final_design::Order::PACKAGER_BULK);
+    REQUIRE(order.packager_m == final_design::ProcessOrder::PACKAGER_BULK);
   }
 }
