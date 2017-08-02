@@ -95,7 +95,47 @@ void defaulting(map<string, string>& order, const string& option,
 }
 }
 
+////////////////////////////////////////////////////////////////////////////
+// RawOrder - Data structure
+////////////////////////////////////////////////////////////////////////////
 
+struct RawOrder
+{
+  RawOrder(const map<string, string>& raw_order)
+    : raw_order_m(raw_order)
+  {
+  }
+
+  map<string, string> getLegacyCopy() const { return raw_order_m; }
+
+  bool hasField(const char* field) const
+  {
+    auto value = raw_order_m.find(field);
+
+    return (value == raw_order_m.end()) ? false : true;
+  }
+
+  const string getfield(const char* field) const
+  {
+    if (hasField(field))
+    {
+      auto value = raw_order_m.find(field);
+      return value->second;
+    }
+    else
+    {
+      return NULL;
+    }
+  }
+
+private:
+  const map<string, string> raw_order_m;
+  RawOrder() = delete;
+};
+
+////////////////////////////////////////////////////////////////////////////
+// ProcessOrder - Main processing class
+////////////////////////////////////////////////////////////////////////////
 
 struct ProcessOrder
 {
@@ -132,11 +172,13 @@ struct ProcessOrder
     , packager_m(PACKAGER_BULK)
     , color_m(COLOR_NONE)
   {
+    RawOrder order(raw_order);
+
     auto plastic = raw_order.find("plastic");
 
-    if (plastic == raw_order.end())
+    if (!order.hasField("plastic"))
     {
-      map<string, string> order_copy = raw_order;
+      auto order_copy = order.getLegacyCopy();
       legacy_classes::defaulting(order_copy, "plastic", "ABS");
       plastic_m = PLASTIC_ABS;
     }
