@@ -213,7 +213,7 @@ TEST_CASE("Order defaults")
     raw_order.erase("plastic");
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
@@ -227,12 +227,12 @@ TEST_CASE("Order defaults")
     raw_order.erase("size");
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
             "  <>No size specified, defaulting to 100.\n");
-    REQUIRE(order.size_m == 100);
+    REQUIRE(order.getSize() == 100);
   }
 
   SECTION("Default packager (3) - <Bulk>")
@@ -240,13 +240,12 @@ TEST_CASE("Order defaults")
     raw_order.erase("packager");
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
             "  <>Unknown packager || defaulting to 'None'.\n");
-    REQUIRE(order.packagerPtr_m->getPackagerType() ==
-            final_design::Packager::PACKAGER_BULK);
+    REQUIRE(order.getPackagerType() == final_design::Packager::PACKAGER_BULK);
   }
 
   SECTION("Default color (18) - <>")
@@ -254,11 +253,11 @@ TEST_CASE("Order defaults")
     raw_order.erase("color");
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.color_m == ProcessOrder::COLOR_NONE);
+    REQUIRE(order.getColor() == Order::COLOR_NONE);
   }
 }
 
@@ -284,7 +283,7 @@ TEST_CASE("Order input - invalid values")
     raw_order["plastic"] = "bogus";
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
@@ -298,12 +297,12 @@ TEST_CASE("Order input - invalid values")
     raw_order["size"] = "";
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
             "  <>No size specified, defaulting to 100.\n");
-    REQUIRE(order.size_m == 100);
+    REQUIRE(order.getSize() == 100);
   }
 
   SECTION("size (2) == 0 to <100>")
@@ -311,12 +310,12 @@ TEST_CASE("Order input - invalid values")
     raw_order["size"] = "0";
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
             "  <>No size specified, defaulting to 100.\n");
-    REQUIRE(order.size_m == 100);
+    REQUIRE(order.getSize() == 100);
   }
 
   SECTION("Packager (3): unknown to <bulk>")
@@ -324,13 +323,12 @@ TEST_CASE("Order input - invalid values")
     raw_order["packager"] = "bogus";
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
             "  <>Unknown packager |bogus| defaulting to 'None'.\n");
-    REQUIRE(order.packagerPtr_m->getPackagerType() ==
-            final_design::Packager::PACKAGER_BULK);
+    REQUIRE(order.getPackagerType() == final_design::Packager::PACKAGER_BULK);
   }
 
   SECTION("Color (2): unknown to <>")
@@ -338,12 +336,12 @@ TEST_CASE("Order input - invalid values")
     raw_order["color"] = "bogus";
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
             "  <>Unknown color |bogus| defaulting to ''.\n");
-    REQUIRE(order.color_m == ProcessOrder::COLOR_NONE);
+    REQUIRE(order.getColor() == Order::COLOR_NONE);
   }
 }
 
@@ -377,7 +375,7 @@ TEST_CASE("Order field options")
     raw_order["plastic"] = "ABS";
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
@@ -390,7 +388,7 @@ TEST_CASE("Order field options")
     raw_order["plastic"] = "Polypropylene";
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
@@ -403,7 +401,7 @@ TEST_CASE("Order field options")
     raw_order["plastic"] = "Polyethelene";
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
@@ -416,7 +414,7 @@ TEST_CASE("Order field options")
     raw_order["plastic"] = "PET";
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
@@ -431,11 +429,11 @@ TEST_CASE("Order field options")
   SECTION("Order size <= 50000")
   {
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.size_m == 10000);
+    REQUIRE(order.getSize() == 10000);
   }
 
   SECTION("Order size == 50000 (max)")
@@ -443,11 +441,11 @@ TEST_CASE("Order field options")
     raw_order["size"] = "50000";
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.size_m == 50000);
+    REQUIRE(order.getSize() == 50000);
   }
 
   SECTION("Order size > 50000")
@@ -455,12 +453,12 @@ TEST_CASE("Order field options")
     raw_order["size"] = "100001";
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "  <>Size exceeds mold lifetime |100001| "
                                      "defaulting to MediumOrder of 50000.\n");
-    REQUIRE(order.size_m == 50000);
+    REQUIRE(order.getSize() == 50000);
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -472,12 +470,11 @@ TEST_CASE("Order field options")
     raw_order["packager"] = "Bulk";
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.packagerPtr_m->getPackagerType() ==
-            final_design::Packager::PACKAGER_BULK);
+    REQUIRE(order.getPackagerType() == final_design::Packager::PACKAGER_BULK);
   }
 
   SECTION("Packager: ShrinkWrap")
@@ -485,11 +482,11 @@ TEST_CASE("Order field options")
     raw_order["packager"] = "ShrinkWrap";
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.packagerPtr_m->getPackagerType() ==
+    REQUIRE(order.getPackagerType() ==
             final_design::Packager::PACKAGER_SHRINK_WRAP);
   }
 
@@ -498,11 +495,11 @@ TEST_CASE("Order field options")
     raw_order["packager"] = "HardPack";
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.packagerPtr_m->getPackagerType() ==
+    REQUIRE(order.getPackagerType() ==
             final_design::Packager::PACKAGER_HARD_PACK);
   }
 
@@ -515,10 +512,10 @@ TEST_CASE("Order field options")
     raw_order["color"] = "black";
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
-    REQUIRE(order.color_m == ProcessOrder::COLOR_BLACK);
+    REQUIRE(order.getColor() == Order::COLOR_BLACK);
   }
 
   SECTION("Color: brown")
@@ -526,10 +523,10 @@ TEST_CASE("Order field options")
     raw_order["color"] = "brown";
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
-    REQUIRE(order.color_m == ProcessOrder::COLOR_BROWN);
+    REQUIRE(order.getColor() == Order::COLOR_BROWN);
   }
 
   SECTION("Color: red")
@@ -537,10 +534,10 @@ TEST_CASE("Order field options")
     raw_order["color"] = "red";
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
-    REQUIRE(order.color_m == ProcessOrder::COLOR_RED);
+    REQUIRE(order.getColor() == Order::COLOR_RED);
   }
 
   SECTION("Color: orange")
@@ -548,10 +545,10 @@ TEST_CASE("Order field options")
     raw_order["color"] = "orange";
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
-    REQUIRE(order.color_m == ProcessOrder::COLOR_ORANGE);
+    REQUIRE(order.getColor() == Order::COLOR_ORANGE);
   }
 
   SECTION("Color: yellow")
@@ -559,10 +556,10 @@ TEST_CASE("Order field options")
     raw_order["color"] = "yellow";
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
-    REQUIRE(order.color_m == ProcessOrder::COLOR_YELLOW);
+    REQUIRE(order.getColor() == Order::COLOR_YELLOW);
   }
 
   SECTION("Color: green")
@@ -570,10 +567,10 @@ TEST_CASE("Order field options")
     raw_order["color"] = "green";
 
     capture_on();
-    auto order = ProcessOrder(raw_order);
+    auto order = Order(raw_order);
     capture_off();
 
-    REQUIRE(order.color_m == ProcessOrder::COLOR_GREEN);
+    REQUIRE(order.getColor() == Order::COLOR_GREEN);
   }
 }
 
@@ -590,17 +587,30 @@ TEST_CASE("Full Orders")
 
   map<string, string> raw_null_order = getCompleteOrder(null_order);
 
-  SECTION("Null order output")
+  SECTION("Null order - Order output")
   {
     capture_on();
-    auto order = ProcessOrder(raw_null_order);
+    auto order = Order(raw_null_order);
     capture_off();
 
     REQUIRE(captured_stdout.str() ==
             "  <>Unknown plastic || defaulting to 'ABS'.\n"
             "  <>No size specified, defaulting to 100.\n"
             "  <>Unknown packager || defaulting to 'None'.\n");
-    REQUIRE(order.packagerPtr_m->getPackagerType() ==
+    REQUIRE(order.getPackagerType() == final_design::Packager::PACKAGER_BULK);
+  }
+
+  SECTION("Null order - ProcessOrder output")
+  {
+    capture_on();
+    auto process_order = ProcessOrder(raw_null_order);
+    capture_off();
+
+    REQUIRE(captured_stdout.str() ==
+            "  <>Unknown plastic || defaulting to 'ABS'.\n"
+            "  <>No size specified, defaulting to 100.\n"
+            "  <>Unknown packager || defaulting to 'None'.\n");
+    REQUIRE(process_order.getOrder().getPackagerType() ==
             final_design::Packager::PACKAGER_BULK);
   }
 }

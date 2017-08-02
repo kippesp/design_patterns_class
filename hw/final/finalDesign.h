@@ -576,17 +576,12 @@ OutputBin* OutputBin::makeObject(uint32_t orderSize)
 namespace template_method
 {
 ////////////////////////////////////////////////////////////////////////////
-// TM - ProcessOrder - Main processing class
+// TM - Order - Main processing class
 ////////////////////////////////////////////////////////////////////////////
 // TODO - Extract out into just Order
-struct ProcessOrder
+struct Order
 {
-  const uint32_t MAX_ORDER_SIZE;
-  Plastic* plasticPtr_m;
-  uint32_t size_m;
-  Packager* packagerPtr_m;
-  enum
-  {
+  typedef enum {
     COLOR_NONE,
     COLOR_BLACK,
     COLOR_BROWN,
@@ -594,38 +589,37 @@ struct ProcessOrder
     COLOR_ORANGE,
     COLOR_YELLOW,
     COLOR_GREEN,
-  } color_m;
+  } color_t;
 
-  virtual ~ProcessOrder()
+  virtual ~Order()
   {
     delete packagerPtr_m;
     delete plasticPtr_m;
 
-    string inst = " ~ProcessOrder\n";
+    string inst = " ~Order\n";
     DTORF(inst);
   }
 
-  ProcessOrder(const map<string, string>& raw_order)
+  Order(const RawOrder& raw_order)
     : MAX_ORDER_SIZE(50000)
     , plasticPtr_m(NULL)
     , size_m(0)
-    , packagerPtr_m(NULL)
     , color_m(COLOR_NONE)
+    , raw_order_m(raw_order)
+    , packagerPtr_m(NULL)
   {
-    RawOrder order(raw_order);
-
     // PLASTIC
-    plasticPtr_m = new Plastic(order);
+    plasticPtr_m = new Plastic(raw_order_m);
 
     // SIZE
-    if (!order.hasField("size"))
+    if (!raw_order_m.hasField("size"))
     {
       cout << "  <>No size specified, defaulting to 100.\n";
       size_m = 100;
     }
     else
     {
-      auto sizeStr = order.getValue("size");
+      auto sizeStr = raw_order_m.getValue("size");
 
       size_m = atoi(sizeStr.c_str());
     }
@@ -645,50 +639,92 @@ struct ProcessOrder
     }
 
     // PACKAGER
-    packagerPtr_m = new Packager(order);
+    packagerPtr_m = new Packager(raw_order_m);
 
     // COLOR
-    auto color = raw_order.find("color");
+    auto color = raw_order.getValue("color");
 
-    if (color == raw_order.end())
+    if (!raw_order_m.hasField("color"))
     {
-      map<string, string> order_copy = raw_order;
       color_m = COLOR_NONE;
     }
-    else if (color->second == "black")
+    else if (color == "black")
     {
       color_m = COLOR_BLACK;
     }
-    else if (color->second == "brown")
+    else if (color == "brown")
     {
       color_m = COLOR_BROWN;
     }
-    else if (color->second == "red")
+    else if (color == "red")
     {
       color_m = COLOR_RED;
     }
-    else if (color->second == "orange")
+    else if (color == "orange")
     {
       color_m = COLOR_ORANGE;
     }
-    else if (color->second == "yellow")
+    else if (color == "yellow")
     {
       color_m = COLOR_YELLOW;
     }
-    else if (color->second == "green")
+    else if (color == "green")
     {
       color_m = COLOR_GREEN;
     }
     else
     {
-      map<string, string> order_copy = raw_order;
-      legacy_classes::defaulting(order_copy, "color", "");
+      map<string, string> legacy_order_copy = raw_order_m.getLegacyCopy();
+      legacy_classes::defaulting(legacy_order_copy, "color", "");
       color_m = COLOR_NONE;
     }
   }
 
+  uint32_t getSize() const { return size_m; }
+
+  color_t getColor() const { return color_m; }
+
+  Packager::packager_type_t getPackagerType() const
+  {
+    return packagerPtr_m->getPackagerType();
+  }
+
+private:
+  Order() = delete;
+
+  const uint32_t MAX_ORDER_SIZE;
+
+public:
+  const Plastic* plasticPtr_m;
+
+protected:
+  uint32_t size_m;
+  color_t color_m;
+  RawOrder raw_order_m;
+  Packager* packagerPtr_m;
+};
+
+struct ProcessOrder
+{
+  ProcessOrder(const map<string, string>& raw_order)
+    : order_m(Order(RawOrder(raw_order)))
+  {
+  }
+
+  virtual ~ProcessOrder()
+  {
+    string inst = " ~ProcessOrder\n";
+    DTORF(inst);
+  }
+
+  const Order& getOrder() const { return order_m; }
+
+  void run() {}
+
 private:
   ProcessOrder() = delete;
+
+  const Order order_m;
 };
 
 // Seam point - add another polymorphic step.
@@ -700,9 +736,11 @@ void process(map<string, string>& order)
 {
   // Fill in the namespaces above with your design pattern class hierarchies.
   // Call your order processing class from here <myProcess>->run(order);
-  auto processOrder = new template_method::ProcessOrder(order);
+  auto process_order = new template_method::ProcessOrder(order);
 
-  delete processOrder;
+  process_order->run();
+
+  delete process_order;
 }
 
 pair<string, string> parse(string line)
