@@ -144,7 +144,7 @@ struct Plastic
     PLASTIC_POLYPROPYLENE,
     PLASTIC_POLYETHELENE,
     PLASTIC_PET,
-  } type_t;
+  } plastic_type_t;
 
   Plastic(const RawOrder& order)
   {
@@ -182,11 +182,62 @@ struct Plastic
     }
   }
 
-  type_t getPlasticType() const { return type_m; }
+  plastic_type_t getPlasticType() const { return type_m; }
 
 protected:
-  type_t type_m;
+  plastic_type_t type_m;
   Plastic() = delete;
+};
+
+////////////////////////////////////////////////////////////////////////////
+// Packager
+////////////////////////////////////////////////////////////////////////////
+
+struct Packager
+{
+  typedef enum {
+    PACKAGER_BULK,
+    PACKAGER_SHRINK_WRAP,
+    PACKAGER_HARD_PACK,
+  } packager_type_t;
+
+  Packager(const RawOrder& order)
+  {
+    auto order_copy = order.getLegacyCopy();
+
+    if (!order.hasField("packager"))
+    {
+      legacy_classes::defaulting(order_copy, "packager", "None");
+      type_m = PACKAGER_BULK;
+      return;
+    }
+
+    auto packager = order.getValue("packager");
+
+    if (packager == "ShrinkWrap")
+    {
+      type_m = PACKAGER_SHRINK_WRAP;
+    }
+    else if (packager == "HardPack")
+    {
+      type_m = PACKAGER_HARD_PACK;
+    }
+    else if (packager == "Bulk")
+    {
+      type_m = PACKAGER_BULK;
+    }
+    else
+    {
+      legacy_classes::defaulting(order_copy, "packager", "None");
+      type_m = PACKAGER_BULK;
+    }
+  }
+
+  packager_type_t getPackagerType() const { return type_m; }
+
+protected:
+  packager_type_t type_m;
+  Packager() = delete;
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -198,12 +249,7 @@ struct ProcessOrder
   const uint32_t MAX_ORDER_SIZE;
   Plastic* plasticPtr_m;
   uint32_t size_m;
-  enum
-  {
-    PACKAGER_BULK,
-    PACKAGER_SHRINK_WRAP,
-    PACKAGER_HARD_PACK,
-  } packager_m;
+  Packager* packagerPtr_m;
   enum
   {
     COLOR_NONE,
@@ -219,7 +265,7 @@ struct ProcessOrder
     : MAX_ORDER_SIZE(50000)
     , plasticPtr_m(NULL)
     , size_m(0)
-    , packager_m(PACKAGER_BULK)
+    , packagerPtr_m(NULL)
     , color_m(COLOR_NONE)
   {
     RawOrder order(raw_order);
@@ -253,32 +299,7 @@ struct ProcessOrder
       size_m = 100;
     }
 
-    auto packager = raw_order.find("packager");
-
-    if (packager == raw_order.end())
-    {
-      map<string, string> order_copy = raw_order;
-      legacy_classes::defaulting(order_copy, "packager", "None");
-      packager_m = PACKAGER_BULK;
-    }
-    else if (packager->second == "ShrinkWrap")
-    {
-      packager_m = PACKAGER_SHRINK_WRAP;
-    }
-    else if (packager->second == "HardPack")
-    {
-      packager_m = PACKAGER_HARD_PACK;
-    }
-    else if (packager->second == "Bulk")
-    {
-      packager_m = PACKAGER_BULK;
-    }
-    else
-    {
-      map<string, string> order_copy = raw_order;
-      legacy_classes::defaulting(order_copy, "packager", "None");
-      packager_m = PACKAGER_BULK;
-    }
+    packagerPtr_m = new Packager(order);
 
     auto color = raw_order.find("color");
 

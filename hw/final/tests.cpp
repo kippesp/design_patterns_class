@@ -111,7 +111,8 @@ TEST_CASE("Order defaults")
 
     REQUIRE(captured_stdout.str() ==
             "  <>Unknown packager || defaulting to 'None'.\n");
-    REQUIRE(order.packager_m == final_design::ProcessOrder::PACKAGER_BULK);
+    REQUIRE(order.packagerPtr_m->getPackagerType() ==
+            final_design::Packager::PACKAGER_BULK);
   }
 
   SECTION("Default color (18) - <>")
@@ -194,7 +195,8 @@ TEST_CASE("Order input - invalid values")
 
     REQUIRE(captured_stdout.str() ==
             "  <>Unknown packager |bogus| defaulting to 'None'.\n");
-    REQUIRE(order.packager_m == final_design::ProcessOrder::PACKAGER_BULK);
+    REQUIRE(order.packagerPtr_m->getPackagerType() ==
+            final_design::Packager::PACKAGER_BULK);
   }
 
   SECTION("Color (2): unknown to <>")
@@ -340,7 +342,8 @@ TEST_CASE("Order field options")
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.packager_m == final_design::ProcessOrder::PACKAGER_BULK);
+    REQUIRE(order.packagerPtr_m->getPackagerType() ==
+            final_design::Packager::PACKAGER_BULK);
   }
 
   SECTION("Packager: ShrinkWrap")
@@ -352,7 +355,8 @@ TEST_CASE("Order field options")
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.packager_m == final_design::ProcessOrder::PACKAGER_SHRINK_WRAP);
+    REQUIRE(order.packagerPtr_m->getPackagerType() ==
+            final_design::Packager::PACKAGER_SHRINK_WRAP);
   }
 
   SECTION("Packager: HardPack")
@@ -364,7 +368,8 @@ TEST_CASE("Order field options")
     capture_off();
 
     REQUIRE(captured_stdout.str() == "");
-    REQUIRE(order.packager_m == final_design::ProcessOrder::PACKAGER_HARD_PACK);
+    REQUIRE(order.packagerPtr_m->getPackagerType() ==
+            final_design::Packager::PACKAGER_HARD_PACK);
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -461,6 +466,7 @@ TEST_CASE("Full Orders")
             "  <>Unknown plastic || defaulting to 'ABS'.\n"
             "  <>No size specified, defaulting to 100.\n"
             "  <>Unknown packager || defaulting to 'None'.\n");
-    REQUIRE(order.packager_m == final_design::ProcessOrder::PACKAGER_BULK);
+    REQUIRE(order.packagerPtr_m->getPackagerType() ==
+            final_design::Packager::PACKAGER_BULK);
   }
 }
