@@ -115,7 +115,7 @@ struct RawOrder
     return (value == raw_order_m.end()) ? false : true;
   }
 
-  const string getField(const char* field) const
+  const string getValue(const char* field) const
   {
     if (hasField(field))
     {
@@ -124,7 +124,7 @@ struct RawOrder
     }
     else
     {
-      return NULL;
+      return "";
     }
   }
 
@@ -157,7 +157,7 @@ struct Plastic
       return;
     }
 
-    auto plastic = order.getField("plastic");
+    auto plastic = order.getValue("plastic");
 
     if (plastic == "ABS")
     {
@@ -226,16 +226,17 @@ struct ProcessOrder
 
     plasticPtr_m = new Plastic(order);
 
-    auto size = raw_order.find("size");
-
-    if (size == raw_order.end())
+    // SIZE
+    if (!order.hasField("size"))
     {
       cout << "  <>No size specified, defaulting to 100.\n";
       size_m = 100;
     }
     else
     {
-      size_m = atoi(size->second.c_str());
+      auto sizeStr = order.getValue("size");
+
+      size_m = atoi(sizeStr.c_str());
     }
 
     if (size_m > MAX_ORDER_SIZE)
