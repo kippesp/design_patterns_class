@@ -193,6 +193,15 @@ TEST_CASE("Injection Machine setup - output bin")
     REQUIRE(output_bin->type() == OutputBin::OUTPUT_BIN_PALLOT_BOX);
     REQUIRE(output_bin->capacity() == 50000);
   }
+
+  SECTION("Output Bin Criteria (8)")
+  {
+    OutputBin* output_bin = OutputBin::makeObject(100000); // exceeds max
+
+    REQUIRE(output_bin->name() == "PallotBox");
+    REQUIRE(output_bin->type() == OutputBin::OUTPUT_BIN_PALLOT_BOX);
+    REQUIRE(output_bin->capacity() == 50000);
+  }
 }
 
 //##########################################################################
