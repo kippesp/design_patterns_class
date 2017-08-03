@@ -100,7 +100,7 @@ void defaulting(map<string, string>& order, const string& option,
 ////////////////////////////////////////////////////////////////////////////
 struct RawOrder
 {
-  ~RawOrder() { DTORF("~RawOrder\n"); }
+  ~RawOrder() { DTORF(" ~RawOrder\n"); }
 
   RawOrder(const map<string, string>& raw_order)
     : raw_order_m(raw_order)
@@ -387,7 +387,7 @@ struct Mold
 
   virtual ~Mold()
   {
-    string inst = " ~Mold\n";
+    string inst = " ~Mold";
     DTORF(inst);
   }
 
@@ -450,7 +450,7 @@ Mold* Mold::makeObject(uint32_t max_run_size)
 {
   if (max_run_size <= 10000)
   {
-    return new Aluminum(1, 10000);
+    return new Aluminum(1, 10000);   // num_cavities, max_run_size
   }
   else if (max_run_size <= 20000)
   {
@@ -487,24 +487,24 @@ struct OutputBin
 
   output_bin_t type() const { return type_m; }
 
-  uint32_t capacity() const { return capacity_m; }
+  uint32_t maxCapacity() const { return max_capacity_m; }
 
   // bool add_num_items(uint32_t num_items_to_add) {}
 
   static OutputBin* makeObject(uint32_t order_size);
 
 protected:
-  OutputBin(const string& name, output_bin_t output_bin_type, uint32_t capacity)
+  OutputBin(const string& name, output_bin_t output_bin_type, uint32_t max_capacity)
     : name_m(name)
     , type_m(output_bin_type)
-    , capacity_m(capacity)
+    , max_capacity_m(max_capacity)
   {
   }
 
 private:
   const string name_m;
   const output_bin_t type_m;
-  const uint32_t capacity_m;
+  const uint32_t max_capacity_m;
 };
 
 struct CardboardBox : public OutputBin
@@ -515,8 +515,8 @@ struct CardboardBox : public OutputBin
     DTORF(inst);
   }
 
-  CardboardBox()
-    : OutputBin("CardboardBox", OUTPUT_BIN_CARDBOARD_BOX, 10000)
+  CardboardBox(uint32_t max_capacity)
+    : OutputBin("CardboardBox", OUTPUT_BIN_CARDBOARD_BOX, max_capacity)
   {
   }
 };
@@ -529,8 +529,8 @@ struct ShellBox : public OutputBin
     DTORF(inst);
   }
 
-  ShellBox()
-    : OutputBin("ShellBox", OUTPUT_BIN_SHELL_BOX, 20000)
+  ShellBox(uint32_t max_capacity)
+    : OutputBin("ShellBox", OUTPUT_BIN_SHELL_BOX, max_capacity)
   {
   }
 };
@@ -543,8 +543,8 @@ struct PallotBox : public OutputBin
     DTORF(inst);
   }
 
-  PallotBox()
-    : OutputBin("PallotBox", OUTPUT_BIN_PALLOT_BOX, 50000)
+  PallotBox(uint32_t max_capacity)
+    : OutputBin("PallotBox", OUTPUT_BIN_PALLOT_BOX, max_capacity)
   {
   }
 };
@@ -553,19 +553,19 @@ OutputBin* OutputBin::makeObject(uint32_t order_size)
 {
   if (order_size <= 10000)
   {
-    return new CardboardBox();
+    return new CardboardBox(10000);
   }
   else if (order_size <= 20000)
   {
-    return new ShellBox();
+    return new ShellBox(20000);
   }
   else if (order_size <= 50000)
   {
-    return new PallotBox();
+    return new PallotBox(50000);
   }
   else
   {
-    return new PallotBox();
+    return new PallotBox(50000);
   }
 }
 
@@ -589,16 +589,18 @@ struct IMM
 
   virtual ~IMM()
   {
+    delete &mold_m;
+
     string inst = " ~IMM\n";
     DTORF(inst);
   }
 
   IMM(ijm_type_t type, const string& name, uint32_t order_size,
-      const factory_method::Mold* moldPtr)
+      const factory_method::Mold& mold)
     : type_m(type)
     , name_m(name)
     , order_size_m(order_size)
-    , moldPtr_m(moldPtr)
+    , mold_m(mold)
   {
   }
 
@@ -606,7 +608,7 @@ struct IMM
 
   ijm_type_t type() const { return type_m; }
 
-  const factory_method::Mold& getMold() const { return *moldPtr_m; }
+  const factory_method::Mold& getMold() const { return mold_m; }
 
   uint32_t maxBatchSize() const { return order_size_m; }
 
@@ -618,7 +620,7 @@ protected:
   const ijm_type_t type_m;
   const string name_m;
   const uint32_t order_size_m;
-  const factory_method::Mold* moldPtr_m;
+  const factory_method::Mold& mold_m;
 };
 
 struct IJM110 : public IMM
@@ -629,8 +631,8 @@ struct IJM110 : public IMM
     DTORF(inst);
   }
 
-  IJM110(const factory_method::Mold* moldPtr, uint32_t order_size)
-    : IMM(IJM_110, "IJM_110", order_size, moldPtr)
+  IJM110(const factory_method::Mold& mold, uint32_t order_size)
+    : IMM(IJM_110, "IJM_110", order_size, mold)
   {
   }
 };
@@ -643,8 +645,8 @@ struct IJM120 : public IMM
     DTORF(inst);
   }
 
-  IJM120(const factory_method::Mold* moldPtr, uint32_t order_size)
-    : IMM(IJM_120, "IJM_120", order_size, moldPtr)
+  IJM120(const factory_method::Mold& mold, uint32_t order_size)
+    : IMM(IJM_120, "IJM_120", order_size, mold)
   {
   }
 };
@@ -657,8 +659,8 @@ struct IJM210 : public IMM
     DTORF(inst);
   }
 
-  IJM210(const factory_method::Mold* moldPtr, uint32_t order_size)
-    : IMM(IJM_210, "IJM_210", order_size, moldPtr)
+  IJM210(const factory_method::Mold& mold, uint32_t order_size)
+    : IMM(IJM_210, "IJM_210", order_size, mold)
   {
   }
 };
@@ -667,21 +669,21 @@ IMM* IMM::makeObject(uint32_t order_size)
 {
   if (order_size <= 10000)
   {
-    auto mold = factory_method::Mold::makeObject(10000);
+    auto mold_ptr = factory_method::Mold::makeObject(10000);
 
-    return new IJM110(mold, order_size);
+    return new IJM110(*mold_ptr, order_size);
   }
   else if (order_size <= 20000)
   {
-    auto mold = factory_method::Mold::makeObject(20000);
+    auto mold_ptr = factory_method::Mold::makeObject(20000);
 
-    return new IJM120(mold, order_size);
+    return new IJM120(*mold_ptr, order_size);
   }
   else if (order_size <= 50000)
   {
-    auto mold = factory_method::Mold::makeObject(50000);
+    auto mold_ptr = factory_method::Mold::makeObject(50000);
 
-    return new IJM210(mold, order_size);
+    return new IJM210(*mold_ptr, order_size);
   }
   else
   {
@@ -697,6 +699,10 @@ struct InjectionLine
 {
   virtual ~InjectionLine()
   {
+    delete &conveyer_belt_m;
+    delete &output_bin_m;
+    delete &imm_m;
+
     string inst = " ~InjectionLine\n";
     DTORF(inst);
   }
@@ -752,11 +758,11 @@ InjectionLine* InjectionLine::makeObject(uint32_t order_size,
 {
   auto imm_ptr = IMM::makeObject(order_size);
   auto output_bin_ptr = factory_method::OutputBin::makeObject(order_size);
-  auto conveyer_belt_m =
+  auto conveyer_belt_ptr =
     factory_method::ConveyerBelt::makeObject(imm_ptr->getMold().numCavities());
 
   return new InjectionLine(*imm_ptr, packager, *output_bin_ptr,
-                           *conveyer_belt_m, order_size);
+                           *conveyer_belt_ptr, order_size);
 }
 
 // Seam point - add another type 1.
@@ -773,7 +779,6 @@ namespace template_method
 ////////////////////////////////////////////////////////////////////////////
 // TM - Order - Main processing class
 ////////////////////////////////////////////////////////////////////////////
-// TODO - Extract out into just Order
 struct Order
 {
   typedef enum {
@@ -791,7 +796,7 @@ struct Order
     delete packagerPtr_m;
     delete plasticPtr_m;
 
-    string inst = " ~Order\n";
+    string inst = " ~Order";
     DTORF(inst);
   }
 
@@ -1015,6 +1020,8 @@ void demo(const string& orderFile)
       break;
     process(order);
   }
+
+  fclose(orderFilePtr);
 }
 
 } // final_design

@@ -152,7 +152,7 @@ TEST_CASE("Injection Machine setup - output bin")
 
     REQUIRE(output_bin->name() == "CardboardBox");
     REQUIRE(output_bin->type() == OutputBin::OUTPUT_BIN_CARDBOARD_BOX);
-    REQUIRE(output_bin->capacity() == 10000);
+    REQUIRE(output_bin->maxCapacity() == 10000);
   }
 
   SECTION("Output Bin Criteria (8)")
@@ -161,7 +161,7 @@ TEST_CASE("Injection Machine setup - output bin")
 
     REQUIRE(output_bin->name() == "ShellBox");
     REQUIRE(output_bin->type() == OutputBin::OUTPUT_BIN_SHELL_BOX);
-    REQUIRE(output_bin->capacity() == 20000);
+    REQUIRE(output_bin->maxCapacity() == 20000);
   }
 
   SECTION("Output Bin Criteria (8)")
@@ -170,7 +170,7 @@ TEST_CASE("Injection Machine setup - output bin")
 
     REQUIRE(output_bin->name() == "PallotBox");
     REQUIRE(output_bin->type() == OutputBin::OUTPUT_BIN_PALLOT_BOX);
-    REQUIRE(output_bin->capacity() == 50000);
+    REQUIRE(output_bin->maxCapacity() == 50000);
   }
 
   SECTION("Output Bin Criteria (8)")
@@ -179,7 +179,7 @@ TEST_CASE("Injection Machine setup - output bin")
 
     REQUIRE(output_bin->name() == "CardboardBox");
     REQUIRE(output_bin->type() == OutputBin::OUTPUT_BIN_CARDBOARD_BOX);
-    REQUIRE(output_bin->capacity() == 10000);
+    REQUIRE(output_bin->maxCapacity() == 10000);
   }
 
   SECTION("Output Bin Criteria (8)")
@@ -188,7 +188,7 @@ TEST_CASE("Injection Machine setup - output bin")
 
     REQUIRE(output_bin->name() == "ShellBox");
     REQUIRE(output_bin->type() == OutputBin::OUTPUT_BIN_SHELL_BOX);
-    REQUIRE(output_bin->capacity() == 20000);
+    REQUIRE(output_bin->maxCapacity() == 20000);
   }
 
   SECTION("Output Bin Criteria (8)")
@@ -197,7 +197,7 @@ TEST_CASE("Injection Machine setup - output bin")
 
     REQUIRE(output_bin->name() == "PallotBox");
     REQUIRE(output_bin->type() == OutputBin::OUTPUT_BIN_PALLOT_BOX);
-    REQUIRE(output_bin->capacity() == 50000);
+    REQUIRE(output_bin->maxCapacity() == 50000);
   }
 
   SECTION("Output Bin Criteria (8)")
@@ -206,7 +206,7 @@ TEST_CASE("Injection Machine setup - output bin")
 
     REQUIRE(output_bin->name() == "PallotBox");
     REQUIRE(output_bin->type() == OutputBin::OUTPUT_BIN_PALLOT_BOX);
-    REQUIRE(output_bin->capacity() == 50000);
+    REQUIRE(output_bin->maxCapacity() == 50000);
   }
 }
 
