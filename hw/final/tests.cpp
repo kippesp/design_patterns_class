@@ -10,6 +10,7 @@ using namespace std;
 #include "catch.hpp"
 
 using namespace final_design::template_method;
+using namespace final_design::abstract_factory;
 using namespace final_design::factory_method;
 
 stringstream captured_stdout;
@@ -91,7 +92,8 @@ TEST_CASE("Injection Machine setup - mold")
 
     REQUIRE(mold->name() == "Aluminum");
     REQUIRE(mold->legacy_name() == "aluminum");
-    REQUIRE(mold->num_cavities() == 1);
+    REQUIRE(mold->type() == Mold::MOLD_ALUMINUM);
+    REQUIRE(mold->numCavities() == 1);
   }
 
   SECTION("Mold Material (5)")
@@ -100,7 +102,8 @@ TEST_CASE("Injection Machine setup - mold")
 
     REQUIRE(mold->name() == "Aluminum");
     REQUIRE(mold->legacy_name() == "aluminum");
-    REQUIRE(mold->num_cavities() == 1);
+    REQUIRE(mold->type() == Mold::MOLD_ALUMINUM);
+    REQUIRE(mold->numCavities() == 1);
   }
 
   SECTION("Mold Material (5)")
@@ -109,7 +112,8 @@ TEST_CASE("Injection Machine setup - mold")
 
     REQUIRE(mold->name() == "Steel");
     REQUIRE(mold->legacy_name() == "steel");
-    REQUIRE(mold->num_cavities() == 1);
+    REQUIRE(mold->type() == Mold::MOLD_STEEL);
+    REQUIRE(mold->numCavities() == 1);
   }
 
   SECTION("Mold Material (5)")
@@ -118,7 +122,7 @@ TEST_CASE("Injection Machine setup - mold")
 
     REQUIRE(mold->name() == "Aluminum");
     REQUIRE(mold->legacy_name() == "aluminum");
-    REQUIRE(mold->num_cavities() == 2);
+    REQUIRE(mold->numCavities() == 2);
   }
 
   SECTION("Mold Material (5)")
@@ -127,7 +131,7 @@ TEST_CASE("Injection Machine setup - mold")
 
     REQUIRE(mold->name() == "Aluminum");
     REQUIRE(mold->legacy_name() == "aluminum");
-    REQUIRE(mold->num_cavities() == 2);
+    REQUIRE(mold->numCavities() == 2);
   }
 }
 
@@ -571,6 +575,51 @@ TEST_CASE("Order field options")
     capture_off();
 
     REQUIRE(order.getColor() == Order::COLOR_GREEN);
+  }
+}
+
+//##########################################################################
+// INJECTION MOLDING MACHINE (4)
+//##########################################################################
+TEST_CASE("Injection Molding Machine Choice")
+{
+  SECTION("IJM_110")
+  {
+    IMM* imm = IMM::makeObject(10000);
+
+    REQUIRE(imm->type() == IMM::IJM_110);
+    REQUIRE(imm->maxBatchSize() == 10000);
+    REQUIRE(imm->name() == "IJM_110");
+    REQUIRE(imm->getMold().numCavities() == 1);
+    REQUIRE(imm->getMold().type() == Mold::MOLD_ALUMINUM);
+
+    delete imm;
+  }
+
+  SECTION("IJM_120")
+  {
+    IMM* imm = IMM::makeObject(20000);
+
+    REQUIRE(imm->type() == IMM::IJM_120);
+    REQUIRE(imm->maxBatchSize() == 20000);
+    REQUIRE(imm->name() == "IJM_120");
+    REQUIRE(imm->getMold().numCavities() == 2);
+    REQUIRE(imm->getMold().type() == Mold::MOLD_ALUMINUM);
+
+    delete imm;
+  }
+
+  SECTION("IJM_210")
+  {
+    IMM* imm = IMM::makeObject(50000);
+
+    REQUIRE(imm->type() == IMM::IJM_210);
+    REQUIRE(imm->maxBatchSize() == 50000);
+    REQUIRE(imm->name() == "IJM_210");
+    REQUIRE(imm->getMold().numCavities() == 1);
+    REQUIRE(imm->getMold().type() == Mold::MOLD_STEEL);
+
+    delete imm;
   }
 }
 

@@ -100,6 +100,8 @@ void defaulting(map<string, string>& order, const string& option,
 ////////////////////////////////////////////////////////////////////////////
 struct RawOrder
 {
+  ~RawOrder() { DTORF("~RawOrder\n"); }
+
   RawOrder(const map<string, string>& raw_order)
     : raw_order_m(raw_order)
   {
@@ -270,18 +272,6 @@ namespace observer
 // Seam point - add another listener.
 }
 
-// DP 9.
-namespace abstract_factory
-{
-
-// Seam point - add another type 1.
-// Seam point - add another type 2.
-// Seam point - add another type 3.
-// Seam point - add another ...
-// Seam point - add another type N.
-// Seam point - add another family.
-}
-
 // DP 8.
 namespace bridge
 {
@@ -388,6 +378,8 @@ ConveyerBelt* ConveyerBelt::makeObject(uint32_t numCavities)
 
 struct Mold
 {
+  typedef enum { MOLD_ALUMINUM, MOLD_STEEL } mold_type_t;
+
   virtual ~Mold()
   {
     string inst = " ~Mold\n";
@@ -396,14 +388,17 @@ struct Mold
 
   const string& name() const { return name_m; }
   const string& legacy_name() const { return legacy_name_m; }
-  uint32_t num_cavities() const { return num_cavities_m; }
+  mold_type_t type() const { return mold_type_m; }
+  uint32_t numCavities() const { return num_cavities_m; }
 
   static Mold* makeObject(uint32_t batchSize, uint32_t orderSize);
 
 protected:
-  Mold(const string name, const string legacy_name, uint32_t num_cavities)
+  Mold(const string name, const string legacy_name, mold_type_t mold_type,
+       uint32_t num_cavities)
     : name_m(name)
     , legacy_name_m(legacy_name)
+    , mold_type_m(mold_type)
     , num_cavities_m(num_cavities)
   {
   }
@@ -411,6 +406,7 @@ protected:
 private:
   string name_m;
   string legacy_name_m;
+  mold_type_t mold_type_m;
   uint32_t num_cavities_m;
 };
 
@@ -423,7 +419,7 @@ struct Aluminum : public Mold
   }
 
   Aluminum(uint32_t num_cavities)
-    : Mold("Aluminum", "aluminum", num_cavities)
+    : Mold("Aluminum", "aluminum", MOLD_ALUMINUM, num_cavities)
   {
   }
 };
@@ -437,7 +433,7 @@ struct StainlessSteel : public Mold
   }
 
   StainlessSteel(uint32_t num_cavities)
-    : Mold("Steel", "steel", num_cavities)
+    : Mold("Steel", "steel", MOLD_STEEL, num_cavities)
   {
   }
 };
@@ -570,6 +566,131 @@ OutputBin* OutputBin::makeObject(uint32_t orderSize)
 }
 
 // Seam point - add another class.
+}
+
+// DP 9.
+namespace abstract_factory
+{
+////////////////////////////////////////////////////////////////////////////
+// AF - Conveyer Belt Family (7)
+////////////////////////////////////////////////////////////////////////////
+
+struct IMM
+{
+  typedef enum {
+    IJM_110,
+    IJM_120,
+    IJM_210,
+  } ijm_type_t;
+
+  virtual ~IMM()
+  {
+    string inst = " ~IMM\n";
+    DTORF(inst);
+  }
+
+  IMM(ijm_type_t type, const string& name, uint32_t max_batch_size,
+      const factory_method::Mold* moldPtr)
+    : type_m(type)
+    , name_m(name)
+    , max_batch_size_m(max_batch_size)
+    , moldPtr_m(moldPtr)
+  {
+  }
+
+  const string& name() { return name_m; }
+
+  ijm_type_t type() const { return type_m; }
+
+  const factory_method::Mold& getMold() const { return *moldPtr_m; }
+
+  uint32_t maxBatchSize() const { return max_batch_size_m; }
+
+  static IMM* makeObject(uint32_t orderSize);
+
+protected:
+  IMM() = delete;
+
+  const ijm_type_t type_m;
+  const string name_m;
+  const uint32_t max_batch_size_m;
+  const factory_method::Mold* moldPtr_m;
+};
+
+struct IJM110 : public IMM
+{
+  virtual ~IJM110()
+  {
+    string inst = " ~IJM110";
+    DTORF(inst);
+  }
+
+  IJM110(const factory_method::Mold* moldPtr)
+    : IMM(IJM_110, "IJM_110", 10000, moldPtr)
+  {
+  }
+};
+
+struct IJM120 : public IMM
+{
+  virtual ~IJM120()
+  {
+    string inst = " ~IJM120";
+    DTORF(inst);
+  }
+
+  IJM120(const factory_method::Mold* moldPtr)
+    : IMM(IJM_120, "IJM_120", 20000, moldPtr)
+  {
+  }
+};
+
+struct IJM210 : public IMM
+{
+  virtual ~IJM210()
+  {
+    string inst = " ~IJM210";
+    DTORF(inst);
+  }
+
+  IJM210(const factory_method::Mold* moldPtr)
+    : IMM(IJM_210, "IJM_210", 50000, moldPtr)
+  {
+  }
+};
+
+IMM* IMM::makeObject(uint32_t orderSize)
+{
+  if (orderSize <= 10000)
+  {
+    auto mold = factory_method::Mold::makeObject(orderSize, orderSize);
+
+    return new IJM110(mold);
+  }
+  else if (orderSize <= 20000)
+  {
+    auto mold = factory_method::Mold::makeObject(orderSize, orderSize);
+
+    return new IJM120(mold);
+  }
+  else if (orderSize <= 50000)
+  {
+    auto mold = factory_method::Mold::makeObject(orderSize, orderSize);
+
+    return new IJM210(mold);
+  }
+  else
+  {
+    assert(false);
+  }
+}
+
+// Seam point - add another type 1.
+// Seam point - add another type 2.
+// Seam point - add another type 3.
+// Seam point - add another ...
+// Seam point - add another type N.
+// Seam point - add another family.
 }
 
 // DP 3.
