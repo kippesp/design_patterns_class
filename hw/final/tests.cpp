@@ -10,6 +10,7 @@ using namespace std;
 #include "catch.hpp"
 
 using namespace final_design::template_method;
+using namespace final_design::template_method;
 using namespace final_design::abstract_factory;
 using namespace final_design::factory_method;
 
@@ -88,50 +89,55 @@ TEST_CASE("Injection Machine setup - mold")
 {
   SECTION("Mold Material (5)")
   {
-    Mold* mold = Mold::makeObject(10000, 10000);
+    Mold* mold = Mold::makeObject(10000);
 
     REQUIRE(mold->name() == "Aluminum");
     REQUIRE(mold->legacy_name() == "aluminum");
     REQUIRE(mold->type() == Mold::MOLD_ALUMINUM);
     REQUIRE(mold->numCavities() == 1);
+    REQUIRE(mold->getMaxRunSize() == 10000);
   }
 
   SECTION("Mold Material (5)")
   {
-    Mold* mold = Mold::makeObject(1, 1);
+    Mold* mold = Mold::makeObject(1);
 
     REQUIRE(mold->name() == "Aluminum");
     REQUIRE(mold->legacy_name() == "aluminum");
     REQUIRE(mold->type() == Mold::MOLD_ALUMINUM);
     REQUIRE(mold->numCavities() == 1);
+    REQUIRE(mold->getMaxRunSize() == 10000);
   }
 
   SECTION("Mold Material (5)")
   {
-    Mold* mold = Mold::makeObject(50000, 50000);
+    Mold* mold = Mold::makeObject(50000);
 
     REQUIRE(mold->name() == "Steel");
     REQUIRE(mold->legacy_name() == "steel");
     REQUIRE(mold->type() == Mold::MOLD_STEEL);
     REQUIRE(mold->numCavities() == 1);
+    REQUIRE(mold->getMaxRunSize() == 50000);
   }
 
   SECTION("Mold Material (5)")
   {
-    Mold* mold = Mold::makeObject(20000, 20000);
+    Mold* mold = Mold::makeObject(20000);
 
     REQUIRE(mold->name() == "Aluminum");
     REQUIRE(mold->legacy_name() == "aluminum");
     REQUIRE(mold->numCavities() == 2);
+    REQUIRE(mold->getMaxRunSize() == 20000);
   }
 
   SECTION("Mold Material (5)")
   {
-    Mold* mold = Mold::makeObject(10001, 10001);
+    Mold* mold = Mold::makeObject(10001);
 
     REQUIRE(mold->name() == "Aluminum");
     REQUIRE(mold->legacy_name() == "aluminum");
     REQUIRE(mold->numCavities() == 2);
+    REQUIRE(mold->getMaxRunSize() == 20000);
   }
 }
 
@@ -488,6 +494,7 @@ TEST_CASE("Order field options")
 
     REQUIRE(captured_stdout.str() == "");
     REQUIRE(order.getPackagerType() == final_design::Packager::PACKAGER_BULK);
+    REQUIRE(order.getPackagerName() == "Bulk");
   }
 
   SECTION("Packager: ShrinkWrap")
@@ -501,6 +508,7 @@ TEST_CASE("Order field options")
     REQUIRE(captured_stdout.str() == "");
     REQUIRE(order.getPackagerType() ==
             final_design::Packager::PACKAGER_SHRINK_WRAP);
+    REQUIRE(order.getPackagerName() == "ShrinkWrap");
   }
 
   SECTION("Packager: HardPack")
@@ -514,6 +522,7 @@ TEST_CASE("Order field options")
     REQUIRE(captured_stdout.str() == "");
     REQUIRE(order.getPackagerType() ==
             final_design::Packager::PACKAGER_HARD_PACK);
+    REQUIRE(order.getPackagerName() == "HardPack");
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -633,6 +642,116 @@ TEST_CASE("Injection Molding Machine Choice")
 }
 
 //##########################################################################
+// INJECTION LINE (9)
+//##########################################################################
+TEST_CASE("Injection Line")
+{
+  const char* order_no_size[] = {
+    "	orderNum	= 2",
+    "	comment		= Example order - one of everything.",
+    "	size		= 10000",
+    "	mold		= duck",
+    "	color		= red",
+    "	plastic		= ABS",
+    "	moldLoc		= inventory",
+    "	tags		= ModelNumber",
+    "	UVInhibiter	= 2",
+    "	packager	= Bulk",
+    "	endOfOrder",
+  };
+
+  auto legacy_order = getCompleteOrder(order_no_size);
+
+  SECTION("IJM_110 - 10,000 - CardboardBox - Linear - Bulk")
+  {
+    legacy_order["size"] = "10000";
+
+    auto raw_order = final_design::RawOrder(legacy_order);
+
+    auto packager = final_design::Packager(raw_order);
+
+    InjectionLine* injection_line_ptr = InjectionLine::makeObject(
+      atoi(raw_order.getValue("size").c_str()), packager);
+
+    REQUIRE(injection_line_ptr->getMaxRunSize() == 10000);
+    REQUIRE(injection_line_ptr->getOrderSize() == 10000);
+    REQUIRE(injection_line_ptr->getImmName() == "IJM_110");
+    REQUIRE(injection_line_ptr->getMoldDescription() == "Aluminum(1)");
+    REQUIRE(injection_line_ptr->getPackagerType() ==
+            final_design::Packager::PACKAGER_BULK);
+    REQUIRE(injection_line_ptr->getBeltConfiguration() ==
+            "Linear conveyer belt");
+    REQUIRE(injection_line_ptr->getOutputBinName() == "CardboardBox");
+  }
+
+  SECTION("IJM_120 - 20,000 - ShellBox - Y-Split - Bulk")
+  {
+    legacy_order["size"] = "20000";
+
+    auto raw_order = final_design::RawOrder(legacy_order);
+
+    auto packager = final_design::Packager(raw_order);
+
+    InjectionLine* injection_line_ptr = InjectionLine::makeObject(
+      atoi(raw_order.getValue("size").c_str()), packager);
+
+    REQUIRE(injection_line_ptr->getMaxRunSize() == 20000);
+    REQUIRE(injection_line_ptr->getOrderSize() == 20000);
+    REQUIRE(injection_line_ptr->getImmName() == "IJM_120");
+    REQUIRE(injection_line_ptr->getMoldDescription() == "Aluminum(2)");
+    REQUIRE(injection_line_ptr->getPackagerType() ==
+            final_design::Packager::PACKAGER_BULK);
+    REQUIRE(injection_line_ptr->getBeltConfiguration() ==
+            "Y-Split conveyer belt");
+    REQUIRE(injection_line_ptr->getOutputBinName() == "ShellBox");
+  }
+
+  SECTION("IJM_210 - 50,000 - PallotBox - Linear - Bulk")
+  {
+    legacy_order["size"] = "50000";
+
+    auto raw_order = final_design::RawOrder(legacy_order);
+
+    auto packager = final_design::Packager(raw_order);
+
+    InjectionLine* injection_line_ptr = InjectionLine::makeObject(
+      atoi(raw_order.getValue("size").c_str()), packager);
+
+    REQUIRE(injection_line_ptr->getMaxRunSize() == 50000);
+    REQUIRE(injection_line_ptr->getOrderSize() == 50000);
+    REQUIRE(injection_line_ptr->getImmName() == "IJM_210");
+    REQUIRE(injection_line_ptr->getMoldDescription() == "Steel(1)");
+    REQUIRE(injection_line_ptr->getPackagerType() ==
+            final_design::Packager::PACKAGER_BULK);
+    REQUIRE(injection_line_ptr->getBeltConfiguration() ==
+            "Linear conveyer belt");
+    REQUIRE(injection_line_ptr->getOutputBinName() == "PallotBox");
+  }
+
+  SECTION("IJM_110 - 9,000 - CardboardBox - Linear - Bulk")
+  {
+    legacy_order["size"] = "9000";
+
+    auto raw_order = final_design::RawOrder(legacy_order);
+
+    auto packager = final_design::Packager(raw_order);
+
+    InjectionLine* injection_line_ptr = InjectionLine::makeObject(
+      atoi(raw_order.getValue("size").c_str()), packager);
+
+    REQUIRE(injection_line_ptr->getMaxRunSize() == 10000);
+    REQUIRE(injection_line_ptr->getOrderSize() == 9000);
+    REQUIRE(injection_line_ptr->getImmName() == "IJM_110");
+    REQUIRE(injection_line_ptr->getMoldDescription() == "Aluminum(1)");
+    REQUIRE(injection_line_ptr->getPackagerType() ==
+            final_design::Packager::PACKAGER_BULK);
+    REQUIRE(injection_line_ptr->getBeltConfiguration() ==
+            "Linear conveyer belt");
+    REQUIRE(injection_line_ptr->getOutputBinName() == "CardboardBox");
+  }
+}
+
+//##########################################################################
 // NULL ORDER (DEFAULT OPERATIONS)
 //##########################################################################
 TEST_CASE("Full Orders")
@@ -655,19 +774,38 @@ TEST_CASE("Full Orders")
             "  <>Unknown plastic || defaulting to 'ABS'.\n"
             "  <>No size specified, defaulting to 100.\n"
             "  <>Unknown packager || defaulting to 'None'.\n");
+    auto packager = order.getPackager();
+
     REQUIRE(order.getPackagerType() == final_design::Packager::PACKAGER_BULK);
+    REQUIRE(packager.type() == final_design::Packager::PACKAGER_BULK);
+
+    InjectionLine* injection_line_ptr =
+      InjectionLine::makeObject(order.getSize(), order.getPackager());
+
+    capture_on();
+    injection_line_ptr->setup();
+    capture_off();
+
+    REQUIRE(
+      captured_stdout.str() ==
+      "  Setup injection line for 100 order:\n"
+      "    IJM_110 - Aluminum(1) - Linear conveyer belt - CardboardBox.\n");
   }
 
   SECTION("Null order - ProcessOrder output")
   {
     capture_on();
     auto process_order = ProcessOrder(raw_null_order);
+    process_order.run();
     capture_off();
 
-    REQUIRE(captured_stdout.str() ==
-            "  <>Unknown plastic || defaulting to 'ABS'.\n"
-            "  <>No size specified, defaulting to 100.\n"
-            "  <>Unknown packager || defaulting to 'None'.\n");
+    REQUIRE(
+      captured_stdout.str() ==
+      "  <>Unknown plastic || defaulting to 'ABS'.\n"
+      "  <>No size specified, defaulting to 100.\n"
+      "  <>Unknown packager || defaulting to 'None'.\n"
+      "  Setup injection line for 100 order:\n"
+      "    IJM_110 - Aluminum(1) - Linear conveyer belt - CardboardBox.\n");
     REQUIRE(process_order.getOrder().getPackagerType() ==
             final_design::Packager::PACKAGER_BULK);
   }
