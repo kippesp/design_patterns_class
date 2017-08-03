@@ -13,6 +13,10 @@
 #include <cstring>
 #include <stdlib.h>
 
+const uint32_t MAX_ORDER_SIZE_PILOT = 10000;
+const uint32_t MAX_ORDER_SIZE_SMALL = 20000;
+const uint32_t MAX_ORDER_SIZE_MEDIUM = 50000;
+
 namespace final_design
 {
 
@@ -448,17 +452,17 @@ struct StainlessSteel : public Mold
 
 Mold* Mold::makeObject(uint32_t max_run_size)
 {
-  if (max_run_size <= 10000)
+  if (max_run_size <= MAX_ORDER_SIZE_PILOT)
   {
-    return new Aluminum(1, 10000);   // num_cavities, max_run_size
+    return new Aluminum(1 /* cavity */, MAX_ORDER_SIZE_PILOT);
   }
-  else if (max_run_size <= 20000)
+  else if (max_run_size <= MAX_ORDER_SIZE_SMALL)
   {
-    return new Aluminum(2, 20000);
+    return new Aluminum(2 /* cavity */, MAX_ORDER_SIZE_SMALL);
   }
-  else if (max_run_size <= 50000)
+  else if (max_run_size <= MAX_ORDER_SIZE_MEDIUM)
   {
-    return new StainlessSteel(1, 50000);
+    return new StainlessSteel(1 /* cavity */, MAX_ORDER_SIZE_MEDIUM);
   }
   else
   {
@@ -551,21 +555,21 @@ struct PallotBox : public OutputBin
 
 OutputBin* OutputBin::makeObject(uint32_t order_size)
 {
-  if (order_size <= 10000)
+  if (order_size <= MAX_ORDER_SIZE_PILOT)
   {
-    return new CardboardBox(10000);
+    return new CardboardBox(MAX_ORDER_SIZE_PILOT);
   }
-  else if (order_size <= 20000)
+  else if (order_size <= MAX_ORDER_SIZE_SMALL)
   {
-    return new ShellBox(20000);
+    return new ShellBox(MAX_ORDER_SIZE_SMALL);
   }
-  else if (order_size <= 50000)
+  else if (order_size <= MAX_ORDER_SIZE_MEDIUM)
   {
-    return new PallotBox(50000);
+    return new PallotBox(MAX_ORDER_SIZE_MEDIUM);
   }
   else
   {
-    return new PallotBox(50000);
+    return new PallotBox(MAX_ORDER_SIZE_MEDIUM);
   }
 }
 
@@ -667,21 +671,21 @@ struct IJM210 : public IMM
 
 IMM* IMM::makeObject(uint32_t order_size)
 {
-  if (order_size <= 10000)
+  if (order_size <= MAX_ORDER_SIZE_PILOT)
   {
-    auto mold_ptr = factory_method::Mold::makeObject(10000);
+    auto mold_ptr = factory_method::Mold::makeObject(MAX_ORDER_SIZE_PILOT);
 
     return new IJM110(*mold_ptr, order_size);
   }
-  else if (order_size <= 20000)
+  else if (order_size <= MAX_ORDER_SIZE_SMALL)
   {
-    auto mold_ptr = factory_method::Mold::makeObject(20000);
+    auto mold_ptr = factory_method::Mold::makeObject(MAX_ORDER_SIZE_SMALL);
 
     return new IJM120(*mold_ptr, order_size);
   }
-  else if (order_size <= 50000)
+  else if (order_size <= MAX_ORDER_SIZE_MEDIUM)
   {
-    auto mold_ptr = factory_method::Mold::makeObject(50000);
+    auto mold_ptr = factory_method::Mold::makeObject(MAX_ORDER_SIZE_MEDIUM);
 
     return new IJM210(*mold_ptr, order_size);
   }
@@ -777,7 +781,7 @@ InjectionLine* InjectionLine::makeObject(uint32_t order_size,
 namespace template_method
 {
 ////////////////////////////////////////////////////////////////////////////
-// TM - Order - Main processing class
+// TM - Order
 ////////////////////////////////////////////////////////////////////////////
 struct Order
 {
@@ -801,7 +805,7 @@ struct Order
   }
 
   Order(const RawOrder& raw_order)
-    : MAX_ORDER_SIZE(50000)
+    : MAX_ORDER_SIZE(MAX_ORDER_SIZE_MEDIUM)
     , plasticPtr_m(NULL)
     , size_m(0)
     , color_m(COLOR_NONE)
@@ -908,6 +912,9 @@ protected:
   Packager* packagerPtr_m;
 };
 
+////////////////////////////////////////////////////////////////////////////
+// TM - ProcessOrder - Main processing class
+////////////////////////////////////////////////////////////////////////////
 struct ProcessOrder
 {
   ProcessOrder(const map<string, string>& raw_order)
@@ -948,11 +955,9 @@ void process(map<string, string>& order)
 {
   // Fill in the namespaces above with your design pattern class hierarchies.
   // Call your order processing class from here <myProcess>->run(order);
-  auto process_order = new template_method::ProcessOrder(order);
+  auto process_order = template_method::ProcessOrder(order);
 
-  process_order->run();
-
-  delete process_order;
+  process_order.run();
 }
 
 pair<string, string> parse(string line)
